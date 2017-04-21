@@ -29,7 +29,7 @@ def make_session():
     )
 
 
-app = make_app()
+application = app = make_app()
 s = make_session()
 
 
