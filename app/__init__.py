@@ -3,7 +3,7 @@ import requests_cache
 from flask import Flask, make_response, render_template
 from flask_compress import Compress
 
-import pulp
+from . import pulp
 
 
 def make_app():
