@@ -8,12 +8,6 @@ import TaskTable from './task-table.jsx';
 import Info from './info.jsx';
 import UpdatedInfo from './updated-info.jsx';
 
-const AVAILABLE_ENVS = [
-    /* TODO: these should come from the server somehow */
-    'example1',
-    'example2',
-];
-
 const URL_STATE_KEYS = [
     'env',
     'relativeTimes',
@@ -25,7 +19,8 @@ export default class extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            env: AVAILABLE_ENVS[0], fetchingEnv: null, fetchedEnv: null,
+            availableEnvs: null,
+            env: null, fetchingEnv: null, fetchedEnv: null,
             relativeTimes: true, refresh: true
         };
         Object.assign(this.state, this.stateFromSearch());
@@ -33,10 +28,15 @@ export default class extends React.Component {
 
     render() {
         console.log("body render with tasks", this.state.tasks);
+        if (!this.state.availableEnvs) {
+            return <div className={this.globalClassName()}>
+                Loading available environments...
+            </div>;
+        }
         return (
             <div className={this.globalClassName()}>
                 <Controls env={this.env()}
-                          availableEnvs={AVAILABLE_ENVS}
+                          availableEnvs={this.state.availableEnvs}
                           onEnvChange={(...args) => this.handleEnvChange(...args)}
                           onRefreshNow={(...args) => this.fetchData()}
                           onRelativeTimesChange={(...args) => this.handleRelativeTimesChange(...args)}
@@ -102,17 +102,27 @@ export default class extends React.Component {
     }
 
     componentDidMount() {
-        this.startTimer();
-        this.fetchData();
         window.onpopstate = (event) => {
             console.log('should set state', event);
             this.setState(event.state);
         };
+
+        const xhr = $.getJSON('env');
+        xhr.then((...x) => this.onEnvsFetched(...x));
     }
 
     componentWillUnmount() {
         this.stopTimer();
         window.onpopstate = null;
+    }
+
+    onEnvsFetched(envs) {
+        this.setState({
+            availableEnvs: envs,
+            env: envs[0],
+        });
+        this.startTimer();
+        this.fetchData();
     }
 
     componentDidUpdate() {

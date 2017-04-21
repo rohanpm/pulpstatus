@@ -1,6 +1,6 @@
 import os
 import requests_cache
-from flask import Flask, make_response, render_template
+from flask import Flask, make_response, render_template, json
 from flask_compress import Compress
 
 from . import pulp
@@ -38,9 +38,15 @@ def index():
     return render_template('index.html')
 
 
+@app.route('/env')
+def env_index():
+    """Produces list of available environments."""
+    return json.jsonify([env['name'] for env in pulp.info])
+
+
 @app.route('/data/<env>/latest')
 def pulp_data(env):
-    env = pulp.info[env]
+    env = pulp.by_name(env)
     pulp_response = s.post(
         '%s/pulp/api/v2/tasks/search/' % env['url'],
         json=dict(
