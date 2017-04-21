@@ -7,15 +7,15 @@ Development Requirements
 ------------------------
 
 - Must have npm in PATH
-- Must have python with requirements.txt installed (e.g. a virtualenv)
+- Must have virtualenv in PATH
 
 Development Hints
 -----------------
 
 - Use `make` to build frontend bundle
-- Use `make run` to run in flask development mode
+- Use `make run` to run in gunicorn
+- Use `make dev` to run in flask development mode with JS and Python hot reload
 - Add `dev=1` to query string to get some additional controls in UI
-- For live JS updates, run `make watchify` while application is running
 - If you have [yarn](https://yarnpkg.com/), you can use `make NPM=yarn`
   for faster/better installs
 

@@ -1,4 +1,5 @@
 .idea/
+virtualenv/
 *.pyc
 requests_cache.sqlite*
 node_modules/

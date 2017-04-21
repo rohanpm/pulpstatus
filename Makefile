@@ -5,6 +5,9 @@ UGLIFY=node_modules/.bin/uglifyjs
 BUNDLE=pulpstatus/static/js/app-bundle.js
 APP_JS=pulpstatus/js-src/app.js
 BROWSERIFY_ARGS=pulpstatus/js-src/app.js -t browserify-css -t babelify -t uglifyify
+VIRTUALENV=virtualenv
+GUNICORN=$(VIRTUALENV)/bin/gunicorn
+FLASK=$(VIRTUALENV)/bin/flask
 
 all: node_modules/timestamp $(BUNDLE)
 
@@ -19,8 +22,26 @@ $(BUNDLE): node_modules/timestamp $(wildcard pulpstatus/js-src/*.js*)
 watchify:
 	$(WATCHIFY) $(BROWSERIFY_ARGS) --outfile $(BUNDLE)
 
-run: $(BUNDLE)
-	gunicorn pulpstatus
+$(VIRTUALENV)/bin/pip:
+	virtualenv $(VIRTUALENV)
+	$(VIRTUALENV)/bin/pip install --upgrade pip
+
+$(GUNICORN): $(VIRTUALENV)/bin/pip
+	$(VIRTUALENV)/bin/pip install -r requirements.txt
+
+$(FLASK): $(VIRTUALENV)/bin/pip
+	$(VIRTUALENV)/bin/pip install -r requirements.txt
+
+run: $(BUNDLE) $(GUNICORN)
+	$(GUNICORN) pulpstatus
+
+run-dev-flask: $(FLASK)
+	$(VIRTUALENV)/bin/pip install --editable .
+	env FLASK_APP=pulpstatus FLASK_DEBUG=1 $(FLASK) run
+
+dev:
+	$(MAKE) -j2 watchify run-dev-flask
 
 clean:
 	rm -f pulpstatus/static/js/app-bundle.js
+	rm -rf $(VIRTUALENV)
