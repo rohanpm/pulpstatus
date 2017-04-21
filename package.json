@@ -1,8 +1,8 @@
 {
-  "name": "pulpstatus-openshift",
+  "name": "pulpstatus",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "pulpstatus/static/js/app-bundle.js",
   "dependencies": {},
   "devDependencies": {
     "babel-plugin-transform-react-jsx": "6.8.0",
@@ -21,7 +21,9 @@
     "watchify": "3.7.0"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "install": "browserify pulpstatus/js-src/app.js -t browserify-css -t babelify -t uglifyify | uglifyjs > app-bundle.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "cp -v app-bundle.js pulpstatus/static/js/app-bundle.js && sleep inf"
   },
   "repository": {
     "type": "git",
