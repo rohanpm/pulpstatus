@@ -1,0 +1,5 @@
+.idea/
+*.pyc
+requests_cache.sqlite*
+node_modules/
+app/static/js/app-bundle.js

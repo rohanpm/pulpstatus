@@ -1,0 +1,26 @@
+NPM=npm
+BROWSERIFY=node_modules/.bin/browserify
+WATCHIFY=node_modules/.bin/watchify
+UGLIFY=node_modules/.bin/uglifyjs
+BUNDLE=app/static/js/app-bundle.js
+APP_JS=app/js-src/app.js
+BROWSERIFY_ARGS=app/js-src/app.js -t browserify-css -t babelify -t uglifyify
+
+all: node_modules/timestamp $(BUNDLE)
+
+node_modules/timestamp: package.json
+	$(NPM) install
+	touch $@
+
+$(BUNDLE): node_modules/timestamp $(wildcard app/js-src/*.js*)
+	$(BROWSERIFY) $(BROWSERIFY_ARGS) | $(UGLIFY) > $@.tmp
+	mv $@.tmp $@
+
+watchify:
+	$(WATCHIFY) $(BROWSERIFY_ARGS) --outfile $(BUNDLE)
+
+run: $(BUNDLE)
+	env FLASK_APP=wsgi.py flask run
+
+clean:
+	rm -f app/static/js/app-bundle.js
