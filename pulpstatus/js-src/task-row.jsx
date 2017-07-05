@@ -18,23 +18,23 @@ export default class extends React.Component {
     }
 
     renderId() {
-        return this.props.task['task_id'];
+        return this.props.task['task_id'] || '<unknown_id>';
     }
 
     renderStarted() {
         const startTime = this.props.task['start_time'];
-        if (this.props.relativeTimes) {
+        if (startTime && this.props.relativeTimes) {
             return <TimeAgo date={startTime}/>;
         }
         return startTime;
     }
 
     renderType() {
-        return this.props.task['task_type'];
+        return this.props.task['task_type'] || '<unknown_type>';
     }
 
     renderTags() {
-        const li = this.props.task['tags'].reduce((out, tag) => {
+        const li = (this.props.task['tags'] || []).reduce((out, tag) => {
             out.push(<li key={tag}>{tag}</li>);
             return out;
         }, []);
@@ -42,9 +42,12 @@ export default class extends React.Component {
     }
 
     renderWorker() {
-        const workerName = this.props.task['worker_name'];
+        const workerName = this.props.task['worker_name'] || '<unknown_worker>';
         // Simplify it to strip redundant info
         var [name, host] = workerName.split('@');
+        if (!host) {
+            return name;
+        }
         if (name.startsWith('reserved_resource_worker-')) {
             name = name.substr('reserved_resource_worker-'.length);
         }
@@ -53,7 +56,7 @@ export default class extends React.Component {
     }
 
     renderProgress() {
-        const report = this.props.task.progress_report;
+        const report = this.props.task.progress_report || {};
         const keys = Object.keys(report);
         if (keys.length == 0) {
             return <span
