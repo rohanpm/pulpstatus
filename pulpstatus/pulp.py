@@ -1,4 +1,23 @@
 import os
+from collections import namedtuple
+from flask import request
+import logging
+
+LOG = logging.getLogger(__name__)
+
+class Env(namedtuple('Env', ['name', 'url', 'auth'])):
+    pass
+
+
+class FakeEnv(object):
+    def __init__(self, name):
+        self.name = name
+        self.auth = ('fake-user', 'fake-password')
+
+    @property
+    def url(self):
+        port = request.environ['SERVER_PORT']
+        return 'http://127.0.0.1:%s/fake-pulp/%s' % (port, self.name)
 
 
 def build_info():
@@ -15,18 +34,21 @@ def build_info():
         if not (name and url and user and password):
             break
 
-        out.append(dict(
-            name=name,
-            url=url,
-            auth=(user, password)))
+        out.append(Env(name, url, (user, password)))
+
     return out
 
 
+def fake_info():
+    names = ['random-pulp', 'sine-pulp', 'empty-pulp', 'missing-pulp']
+    return map(FakeEnv, names)
+
+
 def by_name(name):
-    match = [pulp for pulp in info if pulp['name'] == name]
+    match = [pulp for pulp in info if pulp.name == name]
     if not match:
         raise KeyError(name)
     return match[0]
 
 
-info = build_info()
+info = build_info() or fake_info()

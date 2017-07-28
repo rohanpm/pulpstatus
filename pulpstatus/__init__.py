@@ -2,7 +2,7 @@ import os
 import requests_cache
 from flask import make_response, render_template, json
 
-from . import app, pulp, history
+from . import app, pulp, history, fakepulp
 
 app = application = app.app
 
@@ -29,18 +29,18 @@ def index():
 @app.route('/env')
 def env_index():
     """Produces list of available environments."""
-    return json.jsonify([env['name'] for env in pulp.info])
+    return json.jsonify([env.name for env in pulp.info])
 
 
 @app.route('/data/<env>/latest')
 def pulp_data(env):
     env = pulp.by_name(env)
     pulp_response = s.post(
-        '%s/pulp/api/v2/tasks/search/' % env['url'],
+        '%s/pulp/api/v2/tasks/search/' % env.url,
         json=dict(
             criteria={"filters": {"state": {"$in": ["running", "waiting"]}}}),
         verify=False,
-        auth=env['auth'])
+        auth=env.auth)
 
     history.try_record_history(env, pulp_response)
 

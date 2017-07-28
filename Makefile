@@ -37,7 +37,7 @@ run: $(BUNDLE) $(GUNICORN)
 
 run-dev-flask: $(FLASK)
 	$(VIRTUALENV)/bin/pip install --editable .
-	env FLASK_APP=pulpstatus FLASK_DEBUG=1 $(FLASK) run
+	env FLASK_APP=pulpstatus FLASK_DEBUG=1 $(FLASK) run --with-threads
 
 dev:
 	$(MAKE) -j2 watchify run-dev-flask

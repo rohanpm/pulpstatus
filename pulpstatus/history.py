@@ -36,13 +36,13 @@ def reap_history(conn, env, now):
         DELETE
         FROM history
         WHERE env=? AND datetime < ?
-    ''', (env['name'], then))
+    ''', (env.name, then))
 
 
 def record_history(env, task_response):
     connection = db.connect()
     now = datetime.datetime.utcnow()
-    save = partial(insert_value, connection, env['name'], now)
+    save = partial(insert_value, connection, env.name, now)
 
     tasks = task_response.json()
     tasks_count = lambda state: len([t for t in tasks if t['state'] == state])
