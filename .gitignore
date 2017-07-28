@@ -4,3 +4,4 @@ virtualenv/
 requests_cache.sqlite*
 node_modules/
 pulpstatus/static/js/app-bundle.js
+pulpstatus.sqlite3

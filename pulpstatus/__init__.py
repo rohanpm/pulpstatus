@@ -1,21 +1,10 @@
 import os
 import requests_cache
-from flask import Flask, make_response, render_template, json
-from flask_compress import Compress
+from flask import make_response, render_template, json
 
-from . import pulp
+from . import app, pulp, history
 
-
-def make_app():
-    out = Flask(__name__)
-    Compress(out)
-    out.config.from_envvar('PULPSTATUS_CFG', silent=True)
-
-    if 'bundle_src' not in out.config:
-        out.config['bundle_src'] = 'static/js/app-bundle.js'
-
-    return out
-
+app = application = app.app
 
 def cachedir():
     return os.environ.get('OPENSHIFT_DATA_DIR', os.getcwd())
@@ -29,7 +18,6 @@ def make_session():
     )
 
 
-application = app = make_app()
 s = make_session()
 
 
@@ -53,6 +41,8 @@ def pulp_data(env):
             criteria={"filters": {"state": {"$in": ["running", "waiting"]}}}),
         verify=False,
         auth=env['auth'])
+
+    history.try_record_history(env, pulp_response)
 
     response = make_response(pulp_response.content, pulp_response.status_code)
     response.headers['Content-Type'] = pulp_response.headers['content-type']
