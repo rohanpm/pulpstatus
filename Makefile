@@ -1,4 +1,4 @@
-NPM=npm
+NPM=./yarn-or-npm
 BROWSERIFY=node_modules/.bin/browserify
 WATCHIFY=node_modules/.bin/watchify
 UGLIFY=node_modules/.bin/uglifyjs

@@ -27,7 +27,7 @@ automatically provided for demo/development purposes.
 Development Requirements
 ------------------------
 
-- Must have npm in PATH
+- Must have npm or yarn in PATH (yarn is preferred)
 - Must have virtualenv in PATH
 
 Development Hints
@@ -37,6 +37,3 @@ Development Hints
 - Use `make run` to run in gunicorn
 - Use `make dev` to run in flask development mode with JS and Python hot reload
 - Add `dev=1` to query string to get some additional controls in UI
-- If you have [yarn](https://yarnpkg.com/), you can use `make NPM=yarn`
-  for faster/better installs
-

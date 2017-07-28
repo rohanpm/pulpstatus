@@ -1,0 +1,6 @@
+#!/bin/sh
+if yarn -V 2>/dev/null 1>&2; then
+  exec yarn "$@"
+else
+  exec npm "$@"
+fi
