@@ -21,6 +21,9 @@ variables according to the following scheme:
 
     # ... and so on
 
+If no Pulp servers are configured, some simple fake servers are
+automatically provided for demo/development purposes.
+
 Development Requirements
 ------------------------
 
