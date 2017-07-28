@@ -19,7 +19,7 @@ $(BUNDLE): node_modules/timestamp $(wildcard pulpstatus/js-src/*.js*)
 	$(BROWSERIFY) $(BROWSERIFY_ARGS) | $(UGLIFY) > $@.tmp
 	mv $@.tmp $@
 
-watchify:
+watchify: node_modules/timestamp
 	$(WATCHIFY) $(BROWSERIFY_ARGS) --outfile $(BUNDLE)
 
 $(VIRTUALENV)/bin/pip:
