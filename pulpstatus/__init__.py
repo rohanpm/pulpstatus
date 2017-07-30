@@ -1,8 +1,12 @@
 import os
+import logging
 import requests_cache
-from flask import make_response, render_template, json
+from flask import make_response, render_template, json, request
 
 from . import conf, app, pulp, history, fakepulp
+
+
+LOG = logging.getLogger(__name__)
 
 app = application = app.app
 
@@ -31,6 +35,10 @@ def env_index():
 @app.route('/data/<env>/latest')
 def pulp_data(env):
     env = pulp.by_name(env)
+
+    history_since = request.args.get('history-since')
+    LOG.debug('requested history-since: %s', history_since)
+
     pulp_response = s.post(
         '%s/pulp/api/v2/tasks/search/' % env.url,
         json=dict(
@@ -40,7 +48,12 @@ def pulp_data(env):
 
     history.try_record_history(env, pulp_response)
 
-    response = make_response(pulp_response.content, pulp_response.status_code)
-    response.headers['Content-Type'] = pulp_response.headers['content-type']
+    out = {
+        'pulp': pulp_response.json(),
+        'history': history.get_history(env, history_since),
+    }
+
+
+    response = make_response(json.jsonify(out), pulp_response.status_code)
     response.headers['Date'] = pulp_response.headers['date']
     return response

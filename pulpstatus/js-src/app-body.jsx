@@ -15,13 +15,24 @@ const URL_STATE_KEYS = [
     'dev',
 ];
 
+function getMax(values) {
+    var max = null;
+    values.forEach((value) => {
+        if (max === null || value > max) {
+            max = value;
+        }
+    });
+    return max;
+}
+
 export default class extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             availableEnvs: null,
             env: null, fetchingEnv: null, fetchedEnv: null,
-            relativeTimes: true, refresh: true
+            relativeTimes: true, refresh: true,
+            latestHistory: '2000-01-01 00:00:00',
         };
         Object.assign(this.state, this.stateFromSearch());
     }
@@ -160,7 +171,7 @@ export default class extends React.Component {
             url = this.dataUrl();
         }
 
-        const xhr = $.getJSON(url);
+        const xhr = $.getJSON(url, {'history-since': this.state.latestHistory});
         const env = this.env();
         xhr.then((...x) => this.onNewData(env, ...x));
         this.setState({
@@ -174,24 +185,36 @@ export default class extends React.Component {
         return this.fetchData('static/data/tasks-2016-10-26T19:52+1000.json');
     }
 
-
-    onNewData(env, tasks, textStatus, jqXHR) {
-        console.log('Got data!', env, textStatus);
-
+    onNewData(env, data, textStatus, jqXHR) {
         const newState = {
             fetching: null,
             fetchingEnv: null,
         };
 
+        console.log('Got data!', env, textStatus);
+
         if (env === this.state.env) {
             Object.assign(newState, {
                 fetchedEnv: env,
                 lastUpdated: jqXHR.getResponseHeader('Date'),
-                tasks: tasks,
             });
+            this.onNewPulpData(newState, data['pulp']);
+            this.onNewHistory(newState, data['history']);
         }
 
         this.setState(newState);
+    }
+
+    onNewPulpData(newState, pulp_data) {
+        Object.assign(newState, {
+            tasks: pulp_data,
+        });
+    }
+
+    onNewHistory(newState, history) {
+        Object.assign(newState, {
+            latestHistory: getMax(history['times'])
+        });
     }
 
     env() {
