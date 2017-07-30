@@ -4,6 +4,17 @@ import EnvControl from './env-control.jsx';
 import Spinner from './spinner.jsx';
 
 export default class extends React.Component {
+    chartsCheckbox() {
+        return <label>
+            <input type="checkbox" name="charts"
+                    checked={this.props.charts}
+                    autoComplete="off"
+                    onChange={this.props.onChartsChange}
+            />
+            Charts?
+        </label>;
+    }
+
     render() {
         return <span className="controls">
             <EnvControl {...this.props}/>
@@ -25,6 +36,8 @@ export default class extends React.Component {
                 />
                 Refresh automatically?
             </label>
+
+            {this.chartsCheckbox()}
 
             <button type="button" onClick={this.props.onRefreshNow}
                     disabled={this.props.loading}>

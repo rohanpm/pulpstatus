@@ -1,12 +1,17 @@
 import React from 'react';
 import $ from 'jquery';
 import qs from 'qs';
+import {Responsive, WidthProvider} from 'react-grid-layout';
+const ResponsiveReactGridLayout = WidthProvider(Responsive);
+
 
 import Controls from './controls.jsx';
 import DevControls from './dev-controls.jsx';
 import TaskTable from './task-table.jsx';
 import Info from './info.jsx';
 import UpdatedInfo from './updated-info.jsx';
+import HistoryChart from './history-chart.jsx';
+
 
 const URL_STATE_KEYS = [
     'env',
@@ -32,7 +37,9 @@ export default class extends React.Component {
             availableEnvs: null,
             env: null, fetchingEnv: null, fetchedEnv: null,
             relativeTimes: true, refresh: true,
-            latestHistory: '2000-01-01 00:00:00',
+            charts: false,
+            history: {},
+            historyTimestamp: '2000-01-01 00:00:00',
         };
         Object.assign(this.state, this.stateFromSearch());
     }
@@ -52,9 +59,11 @@ export default class extends React.Component {
                           onRefreshNow={(...args) => this.fetchData()}
                           onRelativeTimesChange={(...args) => this.handleRelativeTimesChange(...args)}
                           onRefreshChange={(...args) => this.handleRefreshChange(...args)}
+                          onChartsChange={(...args) => this.handleChartsChange(...args)}
                           loading={this.isLoading()}
                           relativeTimes={this.state.relativeTimes}
                           refresh={this.state.refresh}
+                          charts={this.state.charts}
                 />
                 {this.state.dev && <DevControls
                     onCannedData={(...args) => this.fetchCannedData()}/>}
@@ -66,9 +75,49 @@ export default class extends React.Component {
                       lastUpdated={this.state.lastUpdated}
                       loading={this.isLoading()}
                       relativeTimes={this.state.relativeTimes}/>
-                <TaskTable tasks={this.state.tasks}
-                           relativeTimes={this.state.relativeTimes}/>
+                {this.renderGrid()}
             </div>
+        );
+    }
+
+    renderGrid() {
+        const taskTable = <TaskTable
+            tasks={this.state.tasks}
+            relativeTimes={this.state.relativeTimes} />;
+
+        if (!this.state.charts) {
+            // charts feature disabled, no grid required
+            return taskTable;
+        }
+
+        const layout = [
+            {i: 'table', x: 0, y: 0, w: 2, h: 5, static: true},
+            {i: 'hist1', x: 2, y: 1, w: 1, h: 1, isResizable: false},
+            {i: 'hist2', x: 2, y: 2, w: 1, h: 1, isResizable: false},
+        ];
+        const layouts = {
+            lg: layout, s: layout, xs: layout
+        };
+        return (
+            <ResponsiveReactGridLayout className="layout" layouts={layouts}
+                breakpoints={{lg: 800, s: 400, xs: 0}}
+                cols={{lg: 3, s: 2, xs: 1}}
+                rowHeight={180}
+            >
+                <div key="table" className="table">
+                    {taskTable}
+                </div>
+                <div key="hist1" className="history">
+                    <HistoryChart historyKey="waiting" history={this.state.history}
+                        fillColor="rgba(20,20,200,0.8)"
+                        />
+                </div>
+                <div key="hist2" className="history">
+                    <HistoryChart historyKey="running" history={this.state.history}
+                        fillColor="rgba(200,20,20,0.8)"
+                        />
+                </div>
+            </ResponsiveReactGridLayout>
         );
     }
 
@@ -80,6 +129,11 @@ export default class extends React.Component {
     handleRefreshChange(event) {
         console.log('refresh changed', event.target.checked);
         this.setState({refresh: event.target.checked});
+    }
+
+    handleChartsChange(event) {
+        console.log('charts changed', event.target.checked);
+        this.setState({charts: event.target.checked});
     }
 
     isLoading() {
@@ -171,7 +225,7 @@ export default class extends React.Component {
             url = this.dataUrl();
         }
 
-        const xhr = $.getJSON(url, {'history-since': this.state.latestHistory});
+        const xhr = $.getJSON(url, {'history-since': this.state.historyTimestamp});
         const env = this.env();
         xhr.then((...x) => this.onNewData(env, ...x));
         this.setState({
@@ -212,8 +266,43 @@ export default class extends React.Component {
     }
 
     onNewHistory(newState, history) {
+        // History object is like this:
+        /*
+            {'metric1': [
+                [<timestamp>, <value>],
+                ...
+            ]}
+        */
+
+        const aggregate = this.state.history || {};
+        history.data.forEach((h) => {
+            const value = h.value;
+            const key = history.keys[h.key];
+            const time = history.times[h.time];
+
+            if (!aggregate[key]) {
+                aggregate[key] = [];
+            }
+            aggregate[key].push([time, value]);
+        });
+
+        history.keys.forEach((key) => {
+            aggregate[key].sort((a, b) => {
+                const timeA = a[0];
+                const timeB = b[0];
+                if (timeA > timeB) {
+                    return 1;
+                }
+                if (timeA < timeB) {
+                    return -1;
+                }
+                return 0;
+            });
+        });
+
         Object.assign(newState, {
-            latestHistory: getMax(history['times'])
+            history: aggregate,
+            historyTimestamp: getMax(history['times'])
         });
     }
 
@@ -226,7 +315,7 @@ export default class extends React.Component {
     }
 
     handleEnvChange(newEnv) {
-        this.setState({env: newEnv});
+        this.setState({env: newEnv, history: {}, historyTimestamp: '2000-01-01 00:00:00'});
     }
 
 
@@ -235,6 +324,7 @@ export default class extends React.Component {
             env: this.state.env,
             relativeTimes: this.state.relativeTimes ? 1 : 0,
             refresh: this.state.refresh ? 1 : 0,
+            charts: this.state.charts ? 1 : 0,
             // note: dev deliberately omitted from URL
         });
         return [
@@ -251,7 +341,7 @@ export default class extends React.Component {
             if ('env' in parsed) {
                 out.env = parsed.env;
             }
-            ['relativeTimes', 'refresh', 'dev'].forEach((key) => {
+            ['relativeTimes', 'refresh', 'dev', 'charts'].forEach((key) => {
                 if (key in parsed) {
                     out[key] = parsed[key] == '1';
                 }

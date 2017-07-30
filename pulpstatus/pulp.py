@@ -40,7 +40,7 @@ def build_info():
 
 
 def fake_info():
-    names = ['random-pulp', 'sine-pulp', 'empty-pulp', 'broken-pulp']
+    names = ['sine-pulp', 'random-pulp', 'empty-pulp', 'broken-pulp']
     return map(FakeEnv, names)
 
 

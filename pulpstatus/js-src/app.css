@@ -1,4 +1,8 @@
 /*@import 'node_modules/bootstrap/dist/css/bootstrap.css';*/
+
+@import 'node_modules/react-grid-layout/css/styles.css';
+@import 'node_modules/react-resizable/css/styles.css';
+
 .step {
     opacity: 0.7;
 }
@@ -65,4 +69,29 @@ td:first-child {
 
 .env-mismatch table, .env-mismatch .info {
     opacity: 0.4;
+}
+
+.react-grid-layout {
+    margin-top: 40px;
+}
+
+.react-grid-item {
+    overflow: hidden;
+}
+
+.react-grid-item.table {
+    overflow-y: auto;
+    width: 100%;
+}
+
+.react-grid-item table {
+    width: 100%;
+}
+
+.chart-label {
+    font-size: small;
+    width: 100%;
+    text-align: center;
+    margin-top: 0px;
+    margin-bottom: 0px;
 }
