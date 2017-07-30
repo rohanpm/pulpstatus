@@ -2,16 +2,9 @@ import logging
 import datetime
 from functools import partial
 
-from . import db
+from . import db, conf
 
 LOG = logging.getLogger(__name__)
-
-# history is only recorded with up to this much accuracy
-# (avoids saving too much duplicate data)
-GRANULARITY_SECONDS = 5
-
-# how long to retain history
-TTL = datetime.timedelta(days=7)
 
 
 def try_record_history(env, task_response):
@@ -21,7 +14,7 @@ def try_record_history(env, task_response):
         LOG.exception("error recording history for response")
 
 def insert_value(conn, env, when, key, value):
-    second = when.second - (when.second % GRANULARITY_SECONDS)
+    second = when.second - (when.second % conf.HISTORY_GRANULARITY)
     chopped_when = when.replace(microsecond=0, second=second)
     conn.execute('''
         INSERT OR REPLACE
@@ -31,7 +24,7 @@ def insert_value(conn, env, when, key, value):
 
 
 def reap_history(conn, env, now):
-    then = now - TTL
+    then = now - conf.HISTORY_TTL
     conn.execute('''
         DELETE
         FROM history

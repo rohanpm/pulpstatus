@@ -24,6 +24,25 @@ variables according to the following scheme:
 If no Pulp servers are configured, some simple fake servers are
 automatically provided for demo/development purposes.
 
+Additional environment variables available for configuration,
+along with their default values, are listed below:
+
+    # Time, in seconds, to cache Pulp server responses.
+    # This will throttle the number of requests sent from
+    # pulpstatus to the configured Pulp servers.
+    PULPSTATUS_CACHE_TTL=30
+
+    # Directory where data shall be stored (e.g. cache & history
+    # sqlite databases).
+    PULPSTATUS_DATA_DIR=<cwd>
+
+    # Finest stored granularity in seconds of stored Pulp history.
+    PULPSTATUS_HISTORY_GRANULARITY=5
+
+    # How long to keep history, in days
+    PULPSTATUS_HISTORY_TTL_DAYS=2
+
+
 Development Requirements
 ------------------------
 

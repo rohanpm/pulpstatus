@@ -2,19 +2,15 @@ import os
 import requests_cache
 from flask import make_response, render_template, json
 
-from . import app, pulp, history, fakepulp
+from . import conf, app, pulp, history, fakepulp
 
 app = application = app.app
 
-def cachedir():
-    return os.environ.get('OPENSHIFT_DATA_DIR', os.getcwd())
-
-
 def make_session():
     return requests_cache.CachedSession(
-        expire_after=30,
+        expire_after=conf.CACHE_TTL,
         allowable_methods=('GET', 'POST'),
-        cache_name=os.path.join(cachedir(), 'requests_cache')
+        cache_name=os.path.join(conf.DATA_DIR, 'requests_cache')
     )
 
 

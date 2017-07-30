@@ -9,6 +9,13 @@ VIRTUALENV=virtualenv
 GUNICORN=$(VIRTUALENV)/bin/gunicorn
 FLASK=$(VIRTUALENV)/bin/flask
 
+# Development mode uses some settings more amenable to quick testing
+DEV_ENV=\
+  FLASK_APP=pulpstatus \
+  FLASK_DEBUG=1 \
+  PULPSTATUS_CACHE_TTL=1 \
+  PULPSTATUS_HISTORY_GRANULARITY=2
+
 all: node_modules/timestamp $(BUNDLE)
 
 node_modules/timestamp: package.json
@@ -37,7 +44,7 @@ run: $(BUNDLE) $(GUNICORN)
 
 run-dev-flask: $(FLASK)
 	$(VIRTUALENV)/bin/pip install --editable .
-	env FLASK_APP=pulpstatus FLASK_DEBUG=1 $(FLASK) run --with-threads
+	env $(DEV_ENV) $(FLASK) run --with-threads
 
 dev:
 	$(MAKE) -j2 watchify run-dev-flask

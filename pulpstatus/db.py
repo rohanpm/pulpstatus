@@ -2,13 +2,12 @@ import os
 import sqlite3
 import logging
 
+from . import conf
+
 DB_NAME = 'pulpstatus.sqlite3'
 DB_INIT = False
 LOG = logging.getLogger(__name__)
 
-
-def db_dir():
-    return os.environ.get('OPENSHIFT_DATA_DIR', os.getcwd())
 
 def db_init(conn):
     try:
@@ -29,7 +28,7 @@ def db_init(conn):
 
 def connect():
     global DB_INIT
-    db_path = os.path.join(db_dir(), DB_NAME)
+    db_path = os.path.join(conf.DATA_DIR, DB_NAME)
     out = sqlite3.connect(db_path)
 
     # this isn't threadsafe at all, but it's not expected to matter;
