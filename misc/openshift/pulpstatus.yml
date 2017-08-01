@@ -1,0 +1,178 @@
+# Resources appropriate for deployment of pulpstatus in OpenShift.
+#
+# Deploy it by: oc create -f pulpstatus.yml
+#
+# For production, various values will need to be tweaked.
+
+apiVersion: v1
+kind: List
+items:
+
+# Image streams for the JS and Python components.
+# The JS images will hold the JS compiled by browserify.
+# The python images will run the flask app.
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    labels:
+      app: pulpstatus
+      lang: js
+    name: pulpstatus-js
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    labels:
+      app: pulpstatus
+      lang: python
+    name: pulpstatus-python
+
+# JS build
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    labels:
+      app: pulpstatus
+      lang: js
+    name: pulpstatus-js
+  spec:
+    output:
+      to:
+        kind: ImageStreamTag
+        name: pulpstatus-js:latest
+    source: &source
+      git:
+        uri: https://github.com/rohanpm/pulpstatus.git
+      type: Git
+    strategy:
+      sourceStrategy:
+        from:
+          kind: ImageStreamTag
+          name: nodejs:6
+          namespace: openshift
+      type: Source
+    triggers:
+    - type: ConfigChange
+    - imageChange: {}
+      type: ImageChange
+
+# Python build
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    labels:
+      app: pulpstatus
+      lang: python
+    name: pulpstatus-python
+  spec:
+    output:
+      to:
+        kind: ImageStreamTag
+        name: pulpstatus-python:latest
+    source: *source
+    strategy:
+      sourceStrategy:
+        from:
+          kind: ImageStreamTag
+          name: python:3.5
+          namespace: openshift
+      type: Source
+    triggers:
+    - type: ConfigChange
+    - imageChange: {}
+      type: ImageChange
+
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    labels:
+      app: pulpstatus
+    name: pulpstatus
+  spec:
+    replicas: 1
+    selector:
+      app: pulpstatus
+      deploymentconfig: pulpstatus
+    template:
+      metadata:
+        labels:
+          app: pulpstatus
+          deploymentconfig: pulpstatus
+      spec:
+        volumes:
+          - name: pulpstatus-js-volume
+            persistentVolumeClaim:
+              claimName: pulpstatus-claim
+        containers:
+        - image: pulpstatus-js:latest
+          name: pulpstatus-js
+          # The JS is saved to this volume for use by the flask apps
+          volumeMounts: &volumeMounts
+            - name: pulpstatus-js-volume
+              mountPath: /opt/app-root/src/pulpstatus/static/js
+        - image: pulpstatus-python:latest
+          name: pulpstatus-python
+          volumeMounts: *volumeMounts
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - pulpstatus-js
+        from:
+          kind: ImageStreamTag
+          name: pulpstatus-js:latest
+      type: ImageChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - pulpstatus-python
+        from:
+          kind: ImageStreamTag
+          name: pulpstatus-python:latest
+      type: ImageChange
+
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app: pulpstatus
+    name: pulpstatus
+  spec:
+    clusterIP:
+    ports:
+    - name: 8080-tcp
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      app: pulpstatus
+      deploymentconfig: pulpstatus
+
+- apiVersion: v1
+  kind: Route
+  metadata:
+    name: pulpstatus
+    labels:
+      app: pulpstatus
+  spec:
+    # Appropriate for local testing with "oc cluster up".s
+    host: pulpstatus.127.0.0.1.nip.io
+    to:
+      kind: Service
+      name: pulpstatus
+    port:
+      targetPort: 8080-tcp
+
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    name: pulpstatus-claim
+  spec:
+    accessModes:
+    - ReadWriteMany
+    resources:
+      requests:
+        storage: 100Mi
