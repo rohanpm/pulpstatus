@@ -73,7 +73,7 @@ items:
       sourceStrategy:
         from:
           kind: ImageStreamTag
-          name: python:3.5
+          name: python:2.7
           namespace: openshift
       type: Source
     triggers:
