@@ -1,3 +1,4 @@
+import time
 from flask import Flask
 from flask_compress import Compress
 import logging
@@ -10,6 +11,8 @@ def make_app():
 
     if 'bundle_src' not in out.config:
         out.config['bundle_src'] = 'static/js/app-bundle.js'
+
+    out.config['timestamp'] = int(time.time())
 
     return out
 
