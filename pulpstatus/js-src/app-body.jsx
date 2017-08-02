@@ -6,7 +6,6 @@ const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
 
 import Controls from './controls.jsx';
-import DevControls from './dev-controls.jsx';
 import TaskTable from './task-table.jsx';
 import Info from './info.jsx';
 import UpdatedInfo from './updated-info.jsx';
@@ -17,7 +16,6 @@ const URL_STATE_KEYS = [
     'env',
     'relativeTimes',
     'refresh',
-    'dev',
 ];
 
 function getMax(values) {
@@ -65,8 +63,6 @@ export default class extends React.Component {
                           refresh={this.state.refresh}
                           charts={this.state.charts}
                 />
-                {this.state.dev && <DevControls
-                    onCannedData={(...args) => this.fetchCannedData()}/>}
                 <UpdatedInfo
                     lastUpdated={this.state.lastUpdated}
                     loading={this.isLoading()}
@@ -234,11 +230,6 @@ export default class extends React.Component {
         });
     }
 
-    fetchCannedData() {
-        // for development purposes, can use some static data
-        return this.fetchData('static/data/tasks-2016-10-26T19:52+1000.json');
-    }
-
     onNewData(env, data, textStatus, jqXHR) {
         const newState = {
             fetching: null,
@@ -325,7 +316,6 @@ export default class extends React.Component {
             relativeTimes: this.state.relativeTimes ? 1 : 0,
             refresh: this.state.refresh ? 1 : 0,
             charts: this.state.charts ? 1 : 0,
-            // note: dev deliberately omitted from URL
         });
         return [
             location.pathname,
@@ -341,7 +331,7 @@ export default class extends React.Component {
             if ('env' in parsed) {
                 out.env = parsed.env;
             }
-            ['relativeTimes', 'refresh', 'dev', 'charts'].forEach((key) => {
+            ['relativeTimes', 'refresh', 'charts'].forEach((key) => {
                 if (key in parsed) {
                     out[key] = parsed[key] == '1';
                 }
