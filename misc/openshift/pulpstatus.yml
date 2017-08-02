@@ -99,22 +99,40 @@ items:
           deploymentconfig: pulpstatus
       spec:
         volumes:
-          - name: pulpstatus-js-volume
-            persistentVolumeClaim:
-              claimName: pulpstatus-claim
+        - name: pulpstatus-js-volume
+          persistentVolumeClaim:
+            claimName: pulpstatus-js-claim
+        - name: pulpstatus-data-volume
+          persistentVolumeClaim:
+            claimName: pulpstatus-data-claim
         containers:
         - image: pulpstatus-js:latest
           name: pulpstatus-js
           # The JS is saved to this volume for use by the flask apps
-          volumeMounts: &volumeMounts
-            - name: pulpstatus-js-volume
-              mountPath: /opt/app-root/src/pulpstatus/static/js
+          volumeMounts:
+          - name: pulpstatus-js-volume
+            mountPath: /opt/app-root/src/pulpstatus/static/js
         - image: pulpstatus-python:latest
           name: pulpstatus-python
-          volumeMounts: *volumeMounts
+          volumeMounts:
+          - name: pulpstatus-js-volume
+            mountPath: /opt/app-root/src/pulpstatus/static/js
+          - name: pulpstatus-data-volume
+            mountPath: /data
+          env:
+          - name: PULPSTATUS_DATA_DIR
+            value: /data
           ports:
           - containerPort: 8080
             protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /env
+              port: 8080
+          readinessProbe:
+            httpGet:
+              path: /static/js/app-bundle.js
+              port: 8080
         # this container polls the pulpstatus app to keep
         # caches and history warm
         - image: pulpstatus-python:latest
@@ -182,10 +200,21 @@ items:
 - apiVersion: v1
   kind: PersistentVolumeClaim
   metadata:
-    name: pulpstatus-claim
+    name: pulpstatus-js-claim
   spec:
     accessModes:
     - ReadWriteMany
+    resources:
+      requests:
+        storage: 10Mi
+
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    name: pulpstatus-data-claim
+  spec:
+    accessModes:
+    - ReadWriteOnce
     resources:
       requests:
         storage: 100Mi
