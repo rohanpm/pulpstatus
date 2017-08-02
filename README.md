@@ -42,6 +42,35 @@ along with their default values, are listed below:
     # How long to keep history, in days
     PULPSTATUS_HISTORY_TTL_DAYS=2
 
+pulpstatus-primer
+-----------------
+
+The `pulpstatus-primer` command may be optionally used to keep the
+history and cache in pulpstatus fresh.
+
+It may be configured by additional environment variables:
+
+    # URL of pulpstatus deployment
+    PULPSTATUS_PRIMER_URL=http://127.0.0.1:5000
+
+    # Set to 1 for verbose logging
+    PULPSTATUS_PRIMER_DEBUG=0
+
+    # Interval for refreshing data
+    PULPSTATUS_PRIMER_INTERVAL=15
+
+OpenShift deployment
+--------------------
+
+pulpstatus works well in OpenShift.
+
+The `misc/openshift` directory contains a sample OpenShift configuration.
+It will require tweaking for production.
+
+For development/test purposes, this should result in a working deployment:
+
+    oc cluster up
+    oc create -f misc/openshift/pulpstatus.yml
 
 Development Requirements
 ------------------------
