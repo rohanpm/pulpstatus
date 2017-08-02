@@ -115,6 +115,18 @@ items:
           ports:
           - containerPort: 8080
             protocol: TCP
+        # this container polls the pulpstatus app to keep
+        # caches and history warm
+        - image: pulpstatus-python:latest
+          name: pulpstatus-primer
+          env:
+          - name: APP_FILE
+            value: /opt/app-root/bin/pulpstatus-primer
+          - name: PULPSTATUS_PRIMER_URL
+            value: 'http://pulpstatus:8080/'
+          # Example how to change the poll interval
+          #- name: PULPSTATUS_PRIMER_INTERVAL
+          #  value: 30
     triggers:
     - type: ConfigChange
     - imageChangeParams:
@@ -129,6 +141,7 @@ items:
         automatic: true
         containerNames:
         - pulpstatus-python
+        - pulpstatus-primer
         from:
           kind: ImageStreamTag
           name: pulpstatus-python:latest
