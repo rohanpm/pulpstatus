@@ -52,7 +52,13 @@ export default class extends React.Component {
         if (!history || history.length < 2) {
             return null;
         }
-        const since = history[0][0];
+        var since = history[0][0];
+
+        // assume UTC if no timezone supplied
+        if (since.indexOf('+') == -1) {
+            since = since + ' +0000';
+        }
+
         return <p className="chart-label">
             {this.props.historyKey}
             {" tasks from "}
