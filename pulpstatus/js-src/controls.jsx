@@ -37,8 +37,6 @@ export default class extends React.Component {
                 Refresh automatically?
             </label>
 
-            {this.chartsCheckbox()}
-
             <button type="button" onClick={this.props.onRefreshNow}
                     disabled={this.props.loading}>
                 Refresh now

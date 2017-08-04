@@ -315,7 +315,8 @@ export default class extends React.Component {
             env: this.state.env,
             relativeTimes: this.state.relativeTimes ? 1 : 0,
             refresh: this.state.refresh ? 1 : 0,
-            charts: this.state.charts ? 1 : 0,
+	    // a hidden feature for now
+            //charts: this.state.charts ? 1 : 0,
         });
         return [
             location.pathname,
