@@ -18,6 +18,8 @@ const URL_STATE_KEYS = [
     'refresh',
 ];
 
+const INITIAL_HISTORY = '2000-01-01T00:00:00Z';
+
 function getMax(values) {
     var max = null;
     values.forEach((value) => {
@@ -37,7 +39,7 @@ export default class extends React.Component {
             relativeTimes: true, refresh: true,
             charts: false,
             history: {},
-            historyTimestamp: '2000-01-01 00:00:00',
+            historyTimestamp: INITIAL_HISTORY,
         };
         Object.assign(this.state, this.stateFromSearch());
     }
@@ -306,7 +308,7 @@ export default class extends React.Component {
     }
 
     handleEnvChange(newEnv) {
-        this.setState({env: newEnv, history: {}, historyTimestamp: '2000-01-01 00:00:00'});
+        this.setState({env: newEnv, history: {}, historyTimestamp: INITIAL_HISTORY});
     }
 
 

@@ -60,6 +60,10 @@ def convert_history_value(key, value):
         return int(value)
     return value
 
+def format_timestamp(ts):
+    when = datetime.datetime.strptime(ts, '%Y-%m-%d %H:%M:%S')
+    return when.strftime('%Y-%m-%dT%H:%M:%SZ')
+
 def get_history(env, since_str):
     out = {'keys': [], 'times': [], 'data': []}
 
@@ -68,7 +72,7 @@ def get_history(env, since_str):
 
     since = datetime.datetime.strptime(
         since_str,
-        '%Y-%m-%d %H:%M:%S')
+        '%Y-%m-%dT%H:%M:%SZ')
 
     with db.connect() as connection:
         cur = connection.cursor()
@@ -91,6 +95,7 @@ def get_history(env, since_str):
                 break
 
             (when, key, value) = row
+            when = format_timestamp(when)
 
             data.append({
                 'time': get_time(when),
