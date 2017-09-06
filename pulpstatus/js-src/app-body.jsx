@@ -40,7 +40,7 @@ export default class extends React.Component {
             env: null, fetchingEnv: null, fetchedEnv: null,
             fetchError: null,
             relativeTimes: true, refresh: true,
-            charts: false,
+            charts: '',
             history: {},
             historyTimestamp: INITIAL_HISTORY,
         };
@@ -116,12 +116,12 @@ export default class extends React.Component {
                     {taskTable}
                 </div>
                 <div key="hist1" className="history">
-                    <HistoryChart historyKey="waiting" history={this.state.history}
+                    <HistoryChart historyKey="waiting" since={this.state.charts} history={this.state.history}
                         fillColor="rgba(20,20,200,0.8)"
                         />
                 </div>
                 <div key="hist2" className="history">
-                    <HistoryChart historyKey="running" history={this.state.history}
+                    <HistoryChart historyKey="running" since={this.state.charts} history={this.state.history}
                         fillColor="rgba(200,20,20,0.8)"
                         />
                 </div>
@@ -140,8 +140,8 @@ export default class extends React.Component {
     }
 
     handleChartsChange(event) {
-        Logger.debug('charts changed', event.target.checked);
-        this.setState({charts: event.target.checked});
+        Logger.debug('charts changed', event.target.value);
+        this.setState({charts: event.target.value});
     }
 
     isLoading() {
@@ -366,7 +366,7 @@ export default class extends React.Component {
             env: this.state.env,
             relativeTimes: this.state.relativeTimes ? 1 : 0,
             refresh: this.state.refresh ? 1 : 0,
-            charts: this.state.charts ? 1 : 0,
+            charts: this.state.charts,
         });
         return [
             location.pathname,
@@ -382,7 +382,10 @@ export default class extends React.Component {
             if ('env' in parsed) {
                 out.env = parsed.env;
             }
-            ['relativeTimes', 'refresh', 'charts'].forEach((key) => {
+            if ('charts' in parsed) {
+                out.charts = parsed.charts;
+            }
+            ['relativeTimes', 'refresh'].forEach((key) => {
                 if (key in parsed) {
                     out[key] = parsed[key] == '1';
                 }

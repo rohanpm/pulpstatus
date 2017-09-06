@@ -1,20 +1,35 @@
 import React from 'react';
 import * as ReactChart from 'react-chartjs';
 import TimeAgo from 'react-timeago';
+import Logger from 'js-logger';
 
 
 export default class extends React.Component {
     history() {
-        return this.props.history[this.props.historyKey + '-count'] || [];
+        const unfiltered = this.props.history[this.props.historyKey + '-count'] || [];
+        var beginIndex = 0;
+        if (this.props.since != 'full') {
+            const now = new Date();
+            const since = new Date(now.getTime() - this.props.since*1000);
+            const sinceStr = since.toISOString();
+            beginIndex = unfiltered.findIndex((timestamp, value) => timestamp >= sinceStr);
+            Logger.debug('sinceStr', sinceStr, 'beginIndex', beginIndex);
+        }
+
+        if (beginIndex == -1) {
+            return [];
+        }
+
+        return unfiltered.slice(beginIndex);
     }
 
     // https://github.com/chartjs/Chart.js/tree/v1.1.1/docs
 
-    chartData() {
+    chartData(history) {
         return {
-            labels: this.history().map((elem) => elem[0]),
+            labels: history.map((elem) => elem[0]),
             datasets: [{
-                data: this.history().map((elem) => elem[1]),
+                data: history.map((elem) => elem[1]),
                 fillColor: this.props.fillColor || "rgba(20,20,20,0.8)",
             }]
         };
@@ -33,12 +48,11 @@ export default class extends React.Component {
         };
     }
 
-    min() {
-        return Math.min.apply(null, this.history().map(x => x[1]));
+    min(history) {
+        return Math.min.apply(null, history.map(x => x[1]));
     }
 
-    mean() {
-        const hist = this.history();
+    mean(hist) {
         var out = 0.0;
         hist.forEach(x => {
             out = out + x[1]/hist.length;
@@ -46,12 +60,11 @@ export default class extends React.Component {
         return Math.round(out);
     }
 
-    max() {
-        return Math.max.apply(null, this.history().map(x => x[1]));
+    max(history) {
+        return Math.max.apply(null, history.map(x => x[1]));
     }
 
-    renderLabel() {
-        const history = this.history();
+    renderLabel(history) {
         if (!history || history.length < 2) {
             return null;
         }
@@ -62,21 +75,22 @@ export default class extends React.Component {
             {" tasks from "}
             <TimeAgo date={since}/>
             <br />
-            {"min: " + this.min()}
-            {"   mean: " + this.mean()}
-            {"   max: " + this.max()}
+            {"min: " + this.min(history)}
+            {"   mean: " + this.mean(history)}
+            {"   max: " + this.max(history)}
         </p>
     }
 
     render() {
+        const history = this.history();
         const LineChart = ReactChart.Line;
         return <div>
             <LineChart
-                data={this.chartData()}
+                data={this.chartData(history)}
                 options={this.chartOptions()}
                 height={100}
             />
-            {this.renderLabel()}
+            {this.renderLabel(history)}
         </div>;
     }
 }
