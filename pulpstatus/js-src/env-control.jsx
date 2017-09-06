@@ -13,7 +13,7 @@ export default class extends React.Component {
 
         return this.props.availableEnvs.reduce((out, env) => {
             const elem = (
-                <label key={env}>
+                <label key={'env-' + env}>
                     <input type="radio" name="env" value={env}
                            onChange={(...x) => this.handleChange(...x)}
                            autoComplete="off"
@@ -24,7 +24,7 @@ export default class extends React.Component {
 
             const thisPrefix = prefix(env);
             if (thisPrefix != lastPrefix) {
-                out.push(<br />);
+                out.push(<br key={'br-' + env} />);
                 lastPrefix = thisPrefix;
             }
 
