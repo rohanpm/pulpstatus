@@ -37,6 +37,7 @@ export default class extends React.Component {
 
     chartOptions() {
         return {
+            animation: false,
             showScale: false,
             scaleBeginAtZero: true,
             pointDot : false,
