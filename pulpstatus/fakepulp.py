@@ -50,6 +50,14 @@ def sine_tasks():
     return running_tasks + waiting_tasks
 
 
+@task_generator('flaky-pulp')
+def flaky_tasks():
+    r = random.random()
+    if r < 0.2:
+        raise RuntimeError('simulated exception')
+    return sine_tasks()
+
+
 def random_workers():
     return [
         'worker1',
