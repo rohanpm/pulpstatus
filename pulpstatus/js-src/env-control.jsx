@@ -1,4 +1,5 @@
 import React from 'react';
+import Logger from 'js-logger';
 
 export default class extends React.Component {
     render() {
@@ -34,11 +35,11 @@ export default class extends React.Component {
     }
 
     handleChange(event) {
-        console.log('radio change', event);
+        Logger.debug('radio change', event);
         if (!event.target.checked) {
             return;
         }
-        console.log('set env to', event.target.value);
+        Logger.debug('set env to', event.target.value);
         this.props.onEnvChange(event.target.value);
     }
 }

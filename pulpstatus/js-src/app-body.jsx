@@ -1,6 +1,7 @@
 import React from 'react';
 import $ from 'jquery';
 import qs from 'qs';
+import Logger from 'js-logger';
 import {Responsive, WidthProvider} from 'react-grid-layout';
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
@@ -45,7 +46,7 @@ export default class extends React.Component {
     }
 
     render() {
-        console.log("body render with tasks", this.state.tasks);
+        Logger.debug("body render with tasks", this.state.tasks);
         if (!this.state.availableEnvs) {
             return <div className={this.globalClassName()}>
                 Loading available environments...
@@ -120,17 +121,17 @@ export default class extends React.Component {
     }
 
     handleRelativeTimesChange(event) {
-        console.log('relative times changed', event.target.checked);
+        Logger.debug('relative times changed', event.target.checked);
         this.setState({relativeTimes: event.target.checked});
     }
 
     handleRefreshChange(event) {
-        console.log('refresh changed', event.target.checked);
+        Logger.debug('refresh changed', event.target.checked);
         this.setState({refresh: event.target.checked});
     }
 
     handleChartsChange(event) {
-        console.log('charts changed', event.target.checked);
+        Logger.debug('charts changed', event.target.checked);
         this.setState({charts: event.target.checked});
     }
 
@@ -166,7 +167,7 @@ export default class extends React.Component {
 
     componentDidMount() {
         window.onpopstate = (event) => {
-            console.log('should set state', event);
+            Logger.debug('should set state', event);
             this.setState(event.state);
         };
 
@@ -189,7 +190,7 @@ export default class extends React.Component {
     }
 
     componentDidUpdate() {
-        console.log('component did update', this.state);
+        Logger.debug('component did update', this.state);
         if (this.state.env != this.state.fetchedEnv && this.state.env != this.state.fetchingEnv) {
             this.fetchData();
         }
@@ -238,7 +239,7 @@ export default class extends React.Component {
             fetchingEnv: null,
         };
 
-        console.log('Got data!', env, textStatus);
+        Logger.debug('Got data!', env, textStatus);
 
         if (env === this.state.env) {
             Object.assign(newState, {
@@ -338,7 +339,7 @@ export default class extends React.Component {
                     out[key] = parsed[key] == '1';
                 }
             });
-            console.log('parsed from search', out);
+            Logger.debug('parsed from search', out);
         }
         return out;
     }

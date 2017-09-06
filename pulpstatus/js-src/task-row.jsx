@@ -1,5 +1,6 @@
 import React from 'react';
 import TimeAgo from 'react-timeago';
+import Logger from 'js-logger';
 
 export default class extends React.Component {
     render() {
@@ -66,7 +67,7 @@ export default class extends React.Component {
             </span>;
         }
         if (keys.length != 1) {
-            console.log('bad progress report', report);
+            Logger.warn('bad progress report', report);
             return '(something went wrong handling this progress report)';
         }
         const type = keys[0];

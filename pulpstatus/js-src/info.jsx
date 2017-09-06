@@ -1,8 +1,9 @@
 import React from 'react';
+import Logger from 'js-logger';
 
 export default class extends React.Component {
     render() {
-        console.log('render info');
+        Logger.debug('render info');
         return <div className="info">{this.innerInfo()}</div>;
     }
 
