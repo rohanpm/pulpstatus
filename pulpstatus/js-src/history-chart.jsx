@@ -8,6 +8,8 @@ export default class extends React.Component {
         return this.props.history[this.props.historyKey + '-count'] || [];
     }
 
+    // https://github.com/chartjs/Chart.js/tree/v1.1.1/docs
+
     chartData() {
         return {
             labels: this.history().map((elem) => elem[0]),
@@ -21,6 +23,7 @@ export default class extends React.Component {
     chartOptions() {
         return {
             showScale: false,
+            scaleBeginAtZero: true,
             pointDot : false,
             datasetStroke: false,
             datasetFill : true,
