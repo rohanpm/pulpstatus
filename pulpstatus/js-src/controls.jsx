@@ -11,7 +11,7 @@ export default class extends React.Component {
                     autoComplete="off"
                     onChange={this.props.onChartsChange}
             />
-            Charts?
+            Charts
         </label>;
     }
 
@@ -25,7 +25,7 @@ export default class extends React.Component {
                        autoComplete="off"
                        onChange={this.props.onRelativeTimesChange}
                 />
-                Relative times?
+                Relative times
             </label>
 
             <label>
@@ -34,7 +34,7 @@ export default class extends React.Component {
                        autoComplete="off"
                        onChange={this.props.onRefreshChange}
                 />
-                Refresh automatically?
+                Refresh automatically
             </label>
 
             {this.chartsCheckbox()}
