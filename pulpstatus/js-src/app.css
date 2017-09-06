@@ -95,3 +95,14 @@ td:first-child {
     margin-top: 0px;
     margin-bottom: 0px;
 }
+
+.error::before {
+    content: '⚠ ';
+    vertical-align: middle;
+    font-size: x-large;
+    color: red;
+}
+
+.error .message {
+    font-style: italic;
+}

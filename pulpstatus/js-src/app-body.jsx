@@ -9,6 +9,7 @@ const ResponsiveReactGridLayout = WidthProvider(Responsive);
 import Controls from './controls.jsx';
 import TaskTable from './task-table.jsx';
 import Info from './info.jsx';
+import Error from './error.jsx';
 import UpdatedInfo from './updated-info.jsx';
 import HistoryChart from './history-chart.jsx';
 
@@ -23,7 +24,7 @@ const INITIAL_HISTORY = '2000-01-01T00:00:00Z';
 
 function getMax(values) {
     var max = null;
-    values.forEach((value) => {
+    (values||[]).forEach((value) => {
         if (max === null || value > max) {
             max = value;
         }
@@ -37,6 +38,7 @@ export default class extends React.Component {
         this.state = {
             availableEnvs: null,
             env: null, fetchingEnv: null, fetchedEnv: null,
+            fetchError: null,
             relativeTimes: true, refresh: true,
             charts: false,
             history: {},
@@ -74,9 +76,16 @@ export default class extends React.Component {
                       lastUpdated={this.state.lastUpdated}
                       loading={this.isLoading()}
                       relativeTimes={this.state.relativeTimes}/>
+                {this.renderError()}
                 {this.renderGrid()}
             </div>
         );
+    }
+
+    renderError() {
+        if (this.state.fetchError) {
+            return <Error error={this.state.fetchError}/>;
+        }
     }
 
     renderGrid() {
@@ -226,7 +235,10 @@ export default class extends React.Component {
 
         const xhr = $.getJSON(url, {'history-since': this.state.historyTimestamp});
         const env = this.env();
-        xhr.then((...x) => this.onNewData(env, ...x));
+        xhr
+            .then((...x) => this.onNewData(env, ...x))
+            .catch((...x) => this.onFetchError(env, ...x));
+
         this.setState({
             fetching: xhr,
             fetchingEnv: env,
@@ -237,6 +249,7 @@ export default class extends React.Component {
         const newState = {
             fetching: null,
             fetchingEnv: null,
+            fetchError: null,
         };
 
         Logger.debug('Got data!', env, textStatus);
@@ -251,6 +264,41 @@ export default class extends React.Component {
         }
 
         this.setState(newState);
+    }
+
+    onFetchError(env, jqXHR, textStatus, error) {
+        if (env != this.env()) {
+            Logger.debug('fetch error for', env, 'but no longer interested');
+            return;
+        }
+        if (error === 'abort') {
+            Logger.debug('Request aborted', jqXHR);
+            return;
+        }
+
+        Logger.warn('Error fetching data', jqXHR, textStatus, error);
+        this.setState({
+            fetching: null,
+            fetchingEnv: null,
+            fetchError: error,
+        });
+
+        // We've failed to fetch this env.
+        // There's two possibilities:
+        // 1 - We have fetched it successfully in the past.
+        // Then we'll keep displaying that data.
+        //
+        // 2 - We've never fetched it before.  Then let's initialize with
+        // empty data so we're not still showing data from some other env.
+        if (this.state.fetchedEnv != env) {
+            const newState = {
+                fetchedEnv: env,
+                lastUpdated: jqXHR.getResponseHeader('Date'),
+            };
+            this.onNewPulpData(newState, []);
+            this.onNewHistory(newState, {});
+            this.setState(newState);
+        }
     }
 
     onNewPulpData(newState, pulp_data) {
@@ -269,7 +317,7 @@ export default class extends React.Component {
         */
 
         const aggregate = this.state.history || {};
-        history.data.forEach((h) => {
+        (history.data || []).forEach((h) => {
             const value = h.value;
             const key = history.keys[h.key];
             const time = history.times[h.time];
@@ -280,7 +328,7 @@ export default class extends React.Component {
             aggregate[key].push([time, value]);
         });
 
-        history.keys.forEach((key) => {
+        (history.keys || []).forEach((key) => {
             aggregate[key].sort((a, b) => {
                 const timeA = a[0];
                 const timeB = b[0];
@@ -296,7 +344,7 @@ export default class extends React.Component {
 
         Object.assign(newState, {
             history: aggregate,
-            historyTimestamp: getMax(history['times'])
+            historyTimestamp: getMax(history['times']) || INITIAL_HISTORY,
         });
     }
 
@@ -309,7 +357,7 @@ export default class extends React.Component {
     }
 
     handleEnvChange(newEnv) {
-        this.setState({env: newEnv, history: {}, historyTimestamp: INITIAL_HISTORY});
+        this.setState({env: newEnv, fetchError: null, history: {}, historyTimestamp: INITIAL_HISTORY});
     }
 
 
