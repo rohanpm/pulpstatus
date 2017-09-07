@@ -87,6 +87,11 @@ export default class extends React.Component {
         const LineChart = ReactChart.Line;
         return <div>
             <LineChart
+                // In practice it is much faster for this element
+                // to be dropped/recreated on each render rather than
+                // the usual React reconciliation, so use a deliberately
+                // unstable key to achieve this.
+                key={Math.random()}
                 data={this.chartData(history)}
                 options={this.chartOptions()}
                 height={100}
