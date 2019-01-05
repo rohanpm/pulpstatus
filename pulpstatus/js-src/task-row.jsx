@@ -56,28 +56,38 @@ export default class extends React.Component {
         return [name, shortHost].join('@');
     }
 
+    progressNotAvailable() {
+        return <span
+            className="no-progress"
+            title="This task has not reported any progress information.">
+            n/a
+        </span>;
+    }
+
     renderProgress() {
         const report = this.props.task.progress_report || {};
         const keys = Object.keys(report);
         if (keys.length == 0) {
-            return <span
-                className="no-progress"
-                title="This task has not reported any progress information.">
-                n/a
-            </span>;
+            return this.progressNotAvailable();
         }
         if (keys.length != 1) {
             Logger.warn('bad progress report', report);
             return '(something went wrong handling this progress report)';
         }
-        const type = keys[0];
-        const steps = report[type];
-        return <ul>
-            {steps.map((step, index) =>
-                <li key={index} className={'step step-' + step.state}>
-                    {step.step_type}
-                </li>
-            )}
-        </ul>;
+
+        try {
+            const type = keys[0];
+            const steps = report[type];
+            return <ul>
+                {steps.map((step, index) =>
+                    <li key={index} className={'step step-' + step.state}>
+                        {step.step_type}
+                    </li>
+                )}
+            </ul>;
+        } catch(err) {
+            Logger.warn('error rendering progress report', err);
+            return this.progressNotAvailable();
+        }
     }
 }

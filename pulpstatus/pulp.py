@@ -41,7 +41,7 @@ def build_info():
 
 def fake_info():
     names = ['sine-pulp', 'random-pulp', 'empty-pulp', 'flaky-pulp', 'broken-pulp']
-    return map(FakeEnv, names)
+    return [FakeEnv(name) for name in names]
 
 
 def by_name(name):

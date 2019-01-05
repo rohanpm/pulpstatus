@@ -67,8 +67,14 @@ def random_workers():
     ]
 
 def random_task(**kwargs):
+    state = 'waiting'
+    if random.random() < 0.10:
+        state = 'running'
+    elif random.random() < 0.10:
+        state = 'canceled'
+
     out = {
-        'state': 'waiting' if random.random() > 0.05 else 'running',
+        'state': state,
         'task_id': uuid.uuid4(),
         'worker_name': random.sample(random_workers(), 1)[0],
         'progress_report': random_progress(),
@@ -80,6 +86,9 @@ def random_task(**kwargs):
 def random_progress():
     if random.random() > 0.5:
         return None
+
+    if random.random() > 0.5:
+        return {'some': {'bogus': 'progress'}}
 
     steps_count = int(random.random() * 7) + 1
     steps_range = range(0, steps_count)
