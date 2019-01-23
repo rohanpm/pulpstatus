@@ -141,7 +141,7 @@ items:
           - name: APP_FILE
             value: /opt/app-root/bin/pulpstatus-primer
           - name: PULPSTATUS_PRIMER_URL
-            value: 'http://pulpstatus:8080/'
+            value: 'http://localhost:8080/'
           # Example how to change the poll interval
           #- name: PULPSTATUS_PRIMER_INTERVAL
           #  value: 30
