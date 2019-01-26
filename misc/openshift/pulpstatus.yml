@@ -47,7 +47,7 @@ items:
       sourceStrategy:
         from:
           kind: ImageStreamTag
-          name: nodejs:6
+          name: nodejs:8
           namespace: openshift
       type: Source
     triggers:
@@ -73,7 +73,7 @@ items:
       sourceStrategy:
         from:
           kind: ImageStreamTag
-          name: python:2.7
+          name: python:3.5
           namespace: openshift
       type: Source
     triggers:
