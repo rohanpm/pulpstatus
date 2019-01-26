@@ -58,6 +58,24 @@ def flaky_tasks():
     return sine_tasks()
 
 
+def random_tags():
+    choices = [
+        'potato',
+        'tomato',
+        'carrot',
+        'avocado',
+        'broccoli',
+        'cauliflower',
+    ]
+
+    out = []
+    while random.random() > 0.6 and choices and len(out) <= 1:
+        random.shuffle(choices)
+        out.append(choices.pop())
+
+    return out
+
+
 def random_workers():
     return [
         'worker1',
@@ -77,6 +95,7 @@ def random_task(**kwargs):
         'state': state,
         'task_id': uuid.uuid4(),
         'worker_name': random.sample(random_workers(), 1)[0],
+        'tags': random_tags(),
         'progress_report': random_progress(),
     }
     out.update(kwargs)
