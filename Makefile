@@ -2,9 +2,10 @@ NPM=npm
 WEBPACK=node_modules/.bin/webpack
 BUNDLE=pulpstatus/static/js/app-bundle.js
 APP_JS=pulpstatus/js-src/app.js
-VIRTUALENV=virtualenv
-GUNICORN=$(VIRTUALENV)/bin/gunicorn
-FLASK=$(VIRTUALENV)/bin/flask
+VIRTUALENV_DIR=virtualenv
+VIRTUALENV=virtualenv-3
+GUNICORN=$(VIRTUALENV_DIR)/bin/gunicorn
+FLASK=$(VIRTUALENV_DIR)/bin/flask
 
 # Development mode uses some settings more amenable to quick testing
 DEV_ENV=\
@@ -22,15 +23,15 @@ node_modules/timestamp: package.json
 $(BUNDLE): node_modules/timestamp $(wildcard pulpstatus/js-src/*.js*)
 	$(WEBPACK)
 
-$(VIRTUALENV)/bin/pip:
-	virtualenv $(VIRTUALENV)
-	$(VIRTUALENV)/bin/pip install --upgrade pip
+$(VIRTUALENV_DIR)/bin/pip:
+	$(VIRTUALENV) $(VIRTUALENV_DIR)
+	$(VIRTUALENV_DIR)/bin/pip install --upgrade pip
 
-$(GUNICORN): $(VIRTUALENV)/bin/pip
-	$(VIRTUALENV)/bin/pip install -r requirements.txt
+$(GUNICORN): $(VIRTUALENV_DIR)/bin/pip
+	$(VIRTUALENV_DIR)/bin/pip install -r requirements.txt
 
-$(FLASK): $(VIRTUALENV)/bin/pip
-	$(VIRTUALENV)/bin/pip install -r requirements.txt
+$(FLASK): $(VIRTUALENV_DIR)/bin/pip
+	$(VIRTUALENV_DIR)/bin/pip install -r requirements.txt
 
 run-webpack-watch:
 	$(WEBPACK) --watch
@@ -39,7 +40,7 @@ run: $(BUNDLE) $(GUNICORN)
 	$(GUNICORN) -w4 pulpstatus
 
 run-dev-flask: $(FLASK)
-	$(VIRTUALENV)/bin/pip install --editable .
+	$(VIRTUALENV_DIR)/bin/pip install --editable .
 	env $(DEV_ENV) $(FLASK) run --with-threads
 
 dev:
@@ -47,4 +48,4 @@ dev:
 
 clean:
 	rm -f $(BUNDLE)
-	rm -rf $(VIRTUALENV)
+	rm -rf $(VIRTUALENV_DIR)
