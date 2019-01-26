@@ -14,7 +14,7 @@ def make_session():
     return requests_cache.CachedSession(
         expire_after=conf.CACHE_TTL,
         allowable_methods=('GET', 'POST'),
-        cache_name=os.path.join(conf.DATA_DIR, 'requests_cache')
+        cache_name=os.path.join(conf.CACHE_DIR, 'requests_cache')
     )
 
 

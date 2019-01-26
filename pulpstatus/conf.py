@@ -2,6 +2,7 @@ import os
 import datetime
 
 CACHE_TTL = int(os.environ.get('PULPSTATUS_CACHE_TTL', '30'))
+CACHE_DIR = os.environ.get('PULPSTATUS_CACHE_DIR', os.getcwd())
 DATA_DIR = os.environ.get('PULPSTATUS_DATA_DIR', os.getcwd())
 
 HISTORY_GRANULARITY = int(os.environ.get('PULPSTATUS_HISTORY_GRANULARITY', '5'))
