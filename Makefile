@@ -14,14 +14,16 @@ DEV_ENV=\
   PULPSTATUS_CACHE_TTL=1 \
   PULPSTATUS_HISTORY_GRANULARITY=2
 
-all: node_modules/timestamp $(BUNDLE)
+all: $(BUNDLE)
 
 node_modules/timestamp: package.json
 	$(NPM) install
 	touch $@
 
-$(BUNDLE): node_modules/timestamp $(wildcard pulpstatus/js-src/*.js*)
+$(BUNDLE): $(WEBPACK) $(wildcard pulpstatus/js-src/*.js*)
 	$(WEBPACK)
+
+$(WEBPACK): node_modules/timestamp
 
 $(VIRTUALENV_DIR)/bin/pip:
 	$(VIRTUALENV) $(VIRTUALENV_DIR)
@@ -33,7 +35,7 @@ $(GUNICORN): $(VIRTUALENV_DIR)/bin/pip
 $(FLASK): $(VIRTUALENV_DIR)/bin/pip
 	$(VIRTUALENV_DIR)/bin/pip install -r requirements.txt
 
-run-webpack-watch:
+run-webpack-watch: $(WEBPACK)
 	$(WEBPACK) --watch
 
 run: $(BUNDLE) $(GUNICORN)
@@ -47,5 +49,5 @@ dev:
 	$(MAKE) -j2 run-dev-flask run-webpack-watch
 
 clean:
-	rm -f $(BUNDLE)
+	rm -f $(BUNDLE) app-bundle.js
 	rm -rf $(VIRTUALENV_DIR)
