@@ -10,7 +10,7 @@ LOG = logging.getLogger(__name__)
 def try_record_history(env, task_response):
     try:
         record_history(env, task_response)
-    except StandardError:
+    except Exception:
         LOG.exception("error recording history for response")
 
 def insert_value(conn, env, when, key, value):
