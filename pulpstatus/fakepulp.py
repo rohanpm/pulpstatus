@@ -23,7 +23,7 @@ def task_generator(name):
 def fake_pulp_tasks(env):
     gen = task_generators.get(env)
     if not gen:
-        raise StandardError('no fake pulp %s available', env)
+        raise RuntimeError('no fake pulp %s available', env)
     return json.jsonify(gen())
 
 @task_generator('empty-pulp')

@@ -42,7 +42,7 @@ class Poller(object):
         try:
             self.get('data/%s/latest' % env)
             LOG.info("Polled %s", env)
-        except StandardError:
+        except Exception:
             LOG.exception("Poll %s failed", env)
 
         self.last_polled[env] = datetime.now()
