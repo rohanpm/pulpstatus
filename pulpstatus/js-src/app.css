@@ -1,7 +1,5 @@
-/*@import 'node_modules/bootstrap/dist/css/bootstrap.css';*/
-
-@import 'node_modules/react-grid-layout/css/styles.css';
-@import 'node_modules/react-resizable/css/styles.css';
+@import url(~react-grid-layout/css/styles.css);
+@import url(~react-resizable/css/styles.css);
 
 .step {
     opacity: 0.7;

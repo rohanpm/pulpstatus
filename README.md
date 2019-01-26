@@ -75,7 +75,7 @@ For development/test purposes, this should result in a working deployment:
 Development Requirements
 ------------------------
 
-- Must have npm or yarn in PATH (yarn is preferred)
+- Must have npm in PATH
 - Must have virtualenv in PATH
 
 Development Hints

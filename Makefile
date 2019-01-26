@@ -1,10 +1,7 @@
-NPM=./yarn-or-npm
-BROWSERIFY=node_modules/.bin/browserify
-WATCHIFY=node_modules/.bin/watchify
-UGLIFY=node_modules/.bin/uglifyjs
+NPM=npm
+WEBPACK=node_modules/.bin/webpack
 BUNDLE=pulpstatus/static/js/app-bundle.js
 APP_JS=pulpstatus/js-src/app.js
-BROWSERIFY_ARGS=pulpstatus/js-src/app.js -t browserify-css -t babelify -t uglifyify
 VIRTUALENV=virtualenv
 GUNICORN=$(VIRTUALENV)/bin/gunicorn
 FLASK=$(VIRTUALENV)/bin/flask
@@ -23,11 +20,7 @@ node_modules/timestamp: package.json
 	touch $@
 
 $(BUNDLE): node_modules/timestamp $(wildcard pulpstatus/js-src/*.js*)
-	$(BROWSERIFY) $(BROWSERIFY_ARGS) | $(UGLIFY) > $@.tmp
-	mv $@.tmp $@
-
-watchify: node_modules/timestamp
-	$(WATCHIFY) $(BROWSERIFY_ARGS) --outfile $(BUNDLE)
+	$(WEBPACK)
 
 $(VIRTUALENV)/bin/pip:
 	virtualenv $(VIRTUALENV)
@@ -39,16 +32,19 @@ $(GUNICORN): $(VIRTUALENV)/bin/pip
 $(FLASK): $(VIRTUALENV)/bin/pip
 	$(VIRTUALENV)/bin/pip install -r requirements.txt
 
+run-webpack-watch:
+	$(WEBPACK) --watch
+
 run: $(BUNDLE) $(GUNICORN)
-	$(GUNICORN) pulpstatus
+	$(GUNICORN) -w4 pulpstatus
 
 run-dev-flask: $(FLASK)
 	$(VIRTUALENV)/bin/pip install --editable .
 	env $(DEV_ENV) $(FLASK) run --with-threads
 
 dev:
-	$(MAKE) -j2 watchify run-dev-flask
+	$(MAKE) -j2 run-dev-flask run-webpack-watch
 
 clean:
-	rm -f pulpstatus/static/js/app-bundle.js
+	rm -f $(BUNDLE)
 	rm -rf $(VIRTUALENV)
