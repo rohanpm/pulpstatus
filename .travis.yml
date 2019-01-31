@@ -1,0 +1,5 @@
+language: generic
+dist: xenial
+script: >-
+  make VIRTUALENV=virtualenv check &&
+  npm run coveralls

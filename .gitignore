@@ -3,7 +3,12 @@ virtualenv/
 *.pyc
 requests_cache.sqlite*
 node_modules/
-pulpstatus/static/js/app-bundle.js
+pulpstatus/static/js/app-bundle.js*
 pulpstatus.sqlite3
 pulpstatus.egg-info/
 app-bundle.js
+.coverage
+htmlcov/
+.awcache/
+.nyc_output/
+coverage/

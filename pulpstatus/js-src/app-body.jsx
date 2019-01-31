@@ -1,7 +1,7 @@
-import React from 'react';
-import $ from 'jquery';
-import qs from 'qs';
-import Logger from 'js-logger';
+import * as React from 'react';
+import * as $ from 'jquery';
+import * as qs from 'qs';
+import * as Logger from 'js-logger';
 import {Responsive, WidthProvider} from 'react-grid-layout';
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
@@ -377,7 +377,7 @@ export default class extends React.Component {
 
     stateFromSearch() {
         const out = {};
-        if (location.search) {
+        if (typeof(location) != 'undefined' && location.search) {
             const parsed = qs.parse(location.search.substr(1));
             if ('env' in parsed) {
                 out.env = parsed.env;

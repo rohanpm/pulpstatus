@@ -1,6 +1,6 @@
-import ReactDOM from 'react-dom';
-import React from 'react';
-import Logger from 'js-logger';
+import * as ReactDOM from 'react-dom';
+import * as React from 'react';
+import * as Logger from 'js-logger';
 
 import appBody from './app-body.jsx';
 

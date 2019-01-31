@@ -7,6 +7,9 @@ module.exports = {
         path: path.resolve(__dirname, 'pulpstatus/static/js'),
         filename: 'app-bundle.js'
     },
+    resolve: {
+        extensions: [".ts", ".tsx", ".js", ".jsx"]
+    },
     module: {
         rules: [
             {
@@ -17,15 +20,14 @@ module.exports = {
                 ]
             },
             {
-                test: /\.jsx?$/,
-                exclude: /(node_modules|bower_components)/,
-                use: {
-                    loader: 'babel-loader',
-                    options: {
-                        presets: ['@babel/preset-react']
-                    }
+                test: /\.(t|j)sx?$/,
+                loader: 'awesome-typescript-loader',
+                options: {
+                    useCache: true
                 }
-            }
+            },
+            { enforce: "pre", test: /\.js$/, loader: "source-map-loader" }
         ]
-    }
+    },
+    devtool: "source-map"
 };
