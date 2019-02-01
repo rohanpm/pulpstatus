@@ -14,7 +14,7 @@ export default class extends React.Component<EnvControlProps> {
         </form>;
     }
 
-    renderEnvInputs() {
+    renderEnvInputs(): Array<JSX.Element> {
         const prefix = (str: string) => (str.split('-')[0]);
         var lastPrefix = prefix(this.props.availableEnvs[0]);
 

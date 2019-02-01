@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-export default class extends React.Component {
+export default class extends React.Component<{error: any}> {
     render() {
         return <div className="error">
             Error fetching tasks, information may be incomplete:

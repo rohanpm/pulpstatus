@@ -9,7 +9,7 @@ const ResponsiveReactGridLayout = WidthProvider(Responsive);
 import Controls from './controls.jsx';
 import TaskTable from './task-table.jsx';
 import Info from './info.jsx';
-import Error from './error.jsx';
+import Error from './error';
 import UpdatedInfo from './updated-info.jsx';
 import HistoryChart from './history-chart.jsx';
 
