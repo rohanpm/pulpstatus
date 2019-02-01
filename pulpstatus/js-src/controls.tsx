@@ -3,7 +3,7 @@ import * as React from 'react';
 import { EnvControl, EnvControlProps } from './env-control';
 
 interface ControlsProps extends EnvControlProps {
-    charts?: string;
+    charts?: "full" | "" | number;
     onChartsChange?: React.ChangeEventHandler;
     onRelativeTimesChange?: React.ChangeEventHandler;
     onRefreshChange?: React.ChangeEventHandler;

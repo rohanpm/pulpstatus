@@ -14,6 +14,23 @@ import UpdatedInfo from './updated-info';
 import HistoryChart from './history-chart';
 
 
+interface AppBodyState {
+    tasks?: Array<Task>;
+    availableEnvs: Array<string>;
+    env: string | null;
+    fetchingEnv: string | null;
+    fetchedEnv: string | null;
+    fetchError?: any;
+    relativeTimes: boolean;
+    refresh: boolean;
+    charts: "full" | "" | number;
+    history?: object;
+    historyTimestamp: string;
+    lastUpdated?: string;
+    fetching?: any;
+};
+
+
 const URL_STATE_KEYS = [
     'env',
     'relativeTimes',
@@ -22,21 +39,20 @@ const URL_STATE_KEYS = [
 
 const INITIAL_HISTORY = '2000-01-01T00:00:00Z';
 
-function getMax(values) {
-    var max = null;
-    (values||[]).forEach((value) => {
-        if (max === null || value > max) {
-            max = value;
-        }
-    });
-    return max;
+function getMax(values?: Array<number>) {
+    if (!values) {
+        return null;
+    }
+    return Math.max(...values);
 }
 
-export default class extends React.Component {
+export default class extends React.Component<{}, AppBodyState> {
+    timer?: number;
+
     constructor(props) {
         super(props);
         this.state = {
-            availableEnvs: null,
+            availableEnvs: [],
             env: null, fetchingEnv: null, fetchedEnv: null,
             fetchError: null,
             relativeTimes: true, refresh: true,
@@ -71,11 +87,8 @@ export default class extends React.Component {
                 <UpdatedInfo
                     lastUpdated={this.state.lastUpdated}
                     loading={this.isLoading()}
-                    relativeTimes={this.state.relativeTimes}/>
-                <Info tasks={this.state.tasks}
-                      lastUpdated={this.state.lastUpdated}
-                      loading={this.isLoading()}
-                      relativeTimes={this.state.relativeTimes}/>
+                    relativeTimes={this.state.relativeTimes} />
+                <Info tasks={this.state.tasks} />
                 {this.renderError()}
                 {this.renderGrid()}
             </div>
@@ -104,12 +117,12 @@ export default class extends React.Component {
             {i: 'hist2', x: 2, y: 2, w: 1, h: 1, isResizable: false},
         ];
         const layouts = {
-            lg: layout, s: layout, xs: layout
+            lg: layout, md: layout, sm: layout, xs: layout, xxs: layout
         };
         return (
             <ResponsiveReactGridLayout className="layout" layouts={layouts}
-                breakpoints={{lg: 800, s: 400, xs: 0}}
-                cols={{lg: 3, s: 2, xs: 1}}
+                breakpoints={{lg: 800, md: 800, sm: 400, xs: 0, xxs: 0}}
+                cols={{lg: 3, md: 3, sm: 2, xs: 1, xxs: 1}}
                 rowHeight={180}
             >
                 <div key="table" className="table">
@@ -149,7 +162,7 @@ export default class extends React.Component {
     }
 
     globalClassName() {
-        const out = [];
+        const out: Array<string> = [];
         if (this.isLoading()) {
             out.push('loading');
         }
@@ -170,7 +183,7 @@ export default class extends React.Component {
     stopTimer() {
         if (this.timer) {
             clearInterval(this.timer);
-            this.timer = null;
+            this.timer = undefined;
         }
     }
 
@@ -181,7 +194,7 @@ export default class extends React.Component {
         };
 
         const xhr = $.getJSON('env');
-        xhr.then((...x) => this.onEnvsFetched(...x));
+        xhr.then((envs) => this.onEnvsFetched(envs));
     }
 
     componentWillUnmount() {
@@ -224,7 +237,7 @@ export default class extends React.Component {
         }, {});
     }
 
-    fetchData(url) {
+    fetchData(url: string | undefined = undefined) {
         if (this.state.fetching) {
             this.state.fetching.abort();
         }
@@ -245,7 +258,7 @@ export default class extends React.Component {
         });
     }
 
-    onNewData(env, data, textStatus, jqXHR) {
+    onNewData(env, data, textStatus, jqXHR, ...rest) {
         const newState = {
             fetching: null,
             fetchingEnv: null,
@@ -266,7 +279,7 @@ export default class extends React.Component {
         this.setState(newState);
     }
 
-    onFetchError(env, jqXHR, textStatus, error) {
+    onFetchError(env, jqXHR, textStatus, error, ...rest) {
         if (env != this.env()) {
             Logger.debug('fetch error for', env, 'but no longer interested');
             return;
@@ -348,7 +361,10 @@ export default class extends React.Component {
         });
     }
 
-    env() {
+    env(): string {
+        if (!this.state.env) {
+            return '';
+        }
         return this.state.env;
     }
 
@@ -376,7 +392,11 @@ export default class extends React.Component {
     }
 
     stateFromSearch() {
-        const out = {};
+        const out: {
+            env?: string;
+            charts?: string;
+        } = {};
+
         if (typeof(location) != 'undefined' && location.search) {
             const parsed = qs.parse(location.search.substr(1));
             if ('env' in parsed) {
