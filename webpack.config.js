@@ -2,7 +2,7 @@ const path = require('path');
 
 module.exports = {
     mode: "development",
-    entry: "./pulpstatus/js-src/app.js",
+    entry: "./pulpstatus/js-src/app.ts",
     output: {
         path: path.resolve(__dirname, 'pulpstatus/static/js'),
         filename: 'app-bundle.js'

@@ -6,3 +6,5 @@ interface Task {
     progress_report?: Array<object> | object;
     start_time?: string;
 }
+
+declare function require(name: string): any;
