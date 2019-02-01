@@ -1,5 +1,13 @@
 language: generic
 dist: xenial
+
+install:
+  - sudo apt-get install -y lcov
+  - gem install coveralls-lcov
+
 script: >-
   make VIRTUALENV=virtualenv check &&
-  npm run coveralls
+  npm run lcov &&
+  ./virtualenv/bin/pip install coveralls &&
+  coveralls-lcov -v -n js-lcov > coverage.json &&
+  ./virtualenv/bin/coveralls --merge=coverage.json

@@ -38,7 +38,7 @@
   "scripts": {
     "install": "webpack --mode production && cp -v pulpstatus/static/js/app-bundle.js .",
     "test": "nyc mocha -r ts-node/register -r source-map-support/register pulpstatus/js-src/**/*.spec.ts",
-    "coveralls": "nyc report --reporter=text-lcov | coveralls",
+    "lcov": "nyc report --reporter=text-lcov > js-lcov",
     "start": "cp -v app-bundle.js pulpstatus/static/js/app-bundle.js && sleep inf"
   },
   "nyc": {
