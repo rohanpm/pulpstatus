@@ -1,8 +1,19 @@
 import * as React from 'react';
 
-import EnvControl from './env-control';
+import { EnvControl, EnvControlProps } from './env-control';
 
-export default class extends React.Component {
+interface ControlsProps extends EnvControlProps {
+    charts?: string;
+    onChartsChange?: React.ChangeEventHandler;
+    onRelativeTimesChange?: React.ChangeEventHandler;
+    onRefreshChange?: React.ChangeEventHandler;
+    onRefreshNow?: React.MouseEventHandler;
+    relativeTimes?: boolean;
+    refresh?: boolean;
+    loading?: boolean;
+};
+
+export default class extends React.Component<ControlsProps> {
     chartsControl() {
         return <label>
             Charts

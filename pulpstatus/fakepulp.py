@@ -5,6 +5,7 @@ import random
 import uuid
 import time
 import math
+import datetime
 
 from .app import app
 
@@ -84,6 +85,11 @@ def random_workers():
         'worker4',
     ]
 
+
+def random_past():
+    return datetime.datetime.utcnow() - datetime.timedelta(minutes=random.random()*600)
+
+
 def random_task(**kwargs):
     state = 'waiting'
     if random.random() < 0.10:
@@ -95,6 +101,7 @@ def random_task(**kwargs):
         'state': state,
         'task_id': uuid.uuid4(),
         'worker_name': random.sample(random_workers(), 1)[0],
+        'start_time': random_past().isoformat(),
         'tags': random_tags(),
         'progress_report': random_progress(),
     }
