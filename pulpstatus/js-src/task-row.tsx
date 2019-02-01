@@ -2,7 +2,16 @@ import * as React from 'react';
 import TimeAgo from 'react-timeago';
 import * as Logger from 'js-logger';
 
-export default class extends React.Component {
+import { Task } from './types';
+
+
+interface TaskRowProps {
+    task: Task;
+    relativeTimes?: boolean;
+    order: Array<string>;
+};
+
+export default class extends React.Component<TaskRowProps> {
     render() {
         return <tr>
             {this.renderCells()}
@@ -15,7 +24,7 @@ export default class extends React.Component {
             const val = this[fn].apply(this);
             out.push(<td key={key}>{val}</td>);
             return out;
-        }, []);
+        }, [] as Array<JSX.Element>);
     }
 
     renderId() {

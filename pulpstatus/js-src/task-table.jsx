@@ -1,5 +1,5 @@
 import * as React from 'react';
-import TaskRow from './task-row.jsx';
+import TaskRow from './task-row';
 
 const TABLE_ORDER = [
     'id',
