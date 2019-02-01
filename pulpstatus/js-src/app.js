@@ -2,7 +2,7 @@ import * as ReactDOM from 'react-dom';
 import * as React from 'react';
 import * as Logger from 'js-logger';
 
-import appBody from './app-body.jsx';
+import appBody from './app-body';
 
 require('./app.css');
 

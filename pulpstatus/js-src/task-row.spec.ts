@@ -12,6 +12,7 @@ describe('TaskRow', () => {
             task: {
                 state: 'running',
                 start_time: '2019-01-01',
+                task_id: 'test-task',
             }
         });
         const rendered = elem.render();

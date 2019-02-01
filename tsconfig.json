@@ -5,10 +5,11 @@
         "strictNullChecks": true,
         "module": "commonjs",
         "jsx": "react",
-        "target": "es5",
+        "target": "es6",
         "allowJs": true,
         "moduleResolution": "node",
-        "types": ["mocha"]
+        "types": ["mocha", "pulpstatus"],
+        "typeRoots" : ["node_modules/@types", "./pulpstatus/js-src/@types"]
     },
     "include": [
         "./pulpstatus/js-src/"

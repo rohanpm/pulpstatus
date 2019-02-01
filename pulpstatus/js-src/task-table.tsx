@@ -1,6 +1,7 @@
 import * as React from 'react';
 import TaskRow from './task-row';
 
+
 const TABLE_ORDER = [
     'id',
     'started',
@@ -20,7 +21,12 @@ const TABLE_HEADERS = {
     progress: 'Progress',
 };
 
-export default class extends React.Component {
+interface TaskTableProps {
+    relativeTimes?: boolean;
+    tasks?: Array<Task>;
+};
+
+export default class extends React.Component<TaskTableProps> {
     render() {
         return <table>
             <thead>
@@ -39,7 +45,7 @@ export default class extends React.Component {
             const text = TABLE_HEADERS[key];
             out.push(<td key={key}>{text}</td>);
             return out;
-        }, []);
+        }, [] as Array<JSX.Element>);
     }
 
     renderRows() {
@@ -54,7 +60,7 @@ export default class extends React.Component {
                 task={task}
                 order={TABLE_ORDER}/>);
             return out;
-        }, []);
+        }, [] as Array<JSX.Element>);
     }
 
     renderEmptyBody() {

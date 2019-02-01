@@ -1,7 +1,6 @@
 import * as React from 'react';
 import * as Logger from 'js-logger';
 
-import { Task, TaskState } from './types';
 
 interface InfoProps {
     tasks?: Array<Task>;

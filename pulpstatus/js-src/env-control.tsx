@@ -15,6 +15,10 @@ export class EnvControl extends React.Component<EnvControlProps> {
     }
 
     renderEnvInputs(): Array<JSX.Element> {
+        if (this.props.availableEnvs.length == 0) {
+            return [];
+        }
+
         const prefix = (str: string) => (str.split('-')[0]);
         var lastPrefix = prefix(this.props.availableEnvs[0]);
 
