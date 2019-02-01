@@ -36,7 +36,7 @@
     "webpack-cli": "^3.2.1"
   },
   "scripts": {
-    "install": "webpack --mode production && cp -v pulpstatus/static/js/app-bundle.js .",
+    "build": "webpack --mode production && cp -v pulpstatus/static/js/app-bundle.js .",
     "test": "nyc mocha -r ts-node/register -r source-map-support/register pulpstatus/js-src/**/*.spec.ts",
     "lcov": "nyc report --reporter=text-lcov > js-lcov",
     "start": "cp -v app-bundle.js pulpstatus/static/js/app-bundle.js && sleep inf"
@@ -58,6 +58,11 @@
     "reporter": [
       "html"
     ],
+    "require": [
+      "ts-node/register"
+    ],
+    "sourceMap": true,
+    "instrument": true,
     "all": true
   },
   "repository": {

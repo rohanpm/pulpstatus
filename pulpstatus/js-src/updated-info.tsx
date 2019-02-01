@@ -2,9 +2,15 @@ import * as React from 'react';
 import TimeAgo from 'react-timeago';
 import * as Logger from 'js-logger';
 
-import Spinner from './spinner.tsx';
+import Spinner from './spinner';
 
-export default class extends React.Component {
+interface UpdatedInfoProps {
+    loading?: boolean;
+    relativeTimes?: boolean;
+    lastUpdated?: string;
+};
+
+export default class extends React.Component<UpdatedInfoProps> {
     render() {
         Logger.debug('render info');
         return <span className="updated-info">

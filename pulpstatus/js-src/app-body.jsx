@@ -10,7 +10,7 @@ import Controls from './controls.jsx';
 import TaskTable from './task-table.jsx';
 import Info from './info.jsx';
 import Error from './error';
-import UpdatedInfo from './updated-info.jsx';
+import UpdatedInfo from './updated-info';
 import HistoryChart from './history-chart.jsx';
 
 
