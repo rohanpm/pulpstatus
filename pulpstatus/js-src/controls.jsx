@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import EnvControl from './env-control.jsx';
+import EnvControl from './env-control';
 
 export default class extends React.Component {
     chartsControl() {
