@@ -2,8 +2,6 @@ import * as React from 'react';
 import TimeAgo from 'react-timeago';
 import * as Logger from 'js-logger';
 
-import { Task } from './types';
-
 
 interface TaskRowProps {
     task: Task;

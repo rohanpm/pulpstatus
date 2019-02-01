@@ -1,7 +1,8 @@
-export type TaskState = 'running' | 'waiting';
+type TaskState = 'running' | 'waiting';
 
-export interface Task {
+interface Task {
     state: TaskState;
+    task_id: string;
     progress_report?: Array<object> | object;
     start_time?: string;
-};
+}

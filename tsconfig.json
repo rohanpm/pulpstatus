@@ -8,7 +8,8 @@
         "target": "es5",
         "allowJs": true,
         "moduleResolution": "node",
-        "types": ["mocha"]
+        "types": ["mocha", "pulpstatus"],
+        "typeRoots" : ["node_modules/@types", "./pulpstatus/js-src/@types"]
     },
     "include": [
         "./pulpstatus/js-src/"
