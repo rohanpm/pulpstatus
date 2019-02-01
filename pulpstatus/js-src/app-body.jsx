@@ -11,7 +11,7 @@ import TaskTable from './task-table';
 import Info from './info';
 import Error from './error';
 import UpdatedInfo from './updated-info';
-import HistoryChart from './history-chart.jsx';
+import HistoryChart from './history-chart';
 
 
 const URL_STATE_KEYS = [

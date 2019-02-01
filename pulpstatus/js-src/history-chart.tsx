@@ -4,7 +4,15 @@ import TimeAgo from 'react-timeago';
 import * as Logger from 'js-logger';
 
 
-export default class extends React.Component {
+interface HistoryChartProps {
+    history?: any;
+    historyKey: string;
+    since: 'full' | number;
+    fillColor?: string;
+};
+
+
+export default class extends React.Component<HistoryChartProps> {
     history() {
         const unfiltered = this.props.history[this.props.historyKey + '-count'] || [];
         var beginIndex = 0;
