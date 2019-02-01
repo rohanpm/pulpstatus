@@ -6,7 +6,7 @@ install:
   - gem install coveralls-lcov
 
 script: >-
-  make VIRTUALENV=virtualenv check &&
+  make VIRTUALENV=virtualenv -j2 check &&
   npm run lcov &&
   ./virtualenv/bin/pip install coveralls &&
   coveralls-lcov -v -n js-lcov > coverage.json &&
