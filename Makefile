@@ -60,7 +60,7 @@ $(VIRTUALENV_DIR)/deps.timestamp: requirements.txt test-requirements.txt $(VIRTU
 
 check-py: pydeps
 	$(VIRTUALENV_DIR)/bin/pip install --editable .
-	$(VIRTUALENV_DIR)/bin/py.test -v --cov pulpstatus --cov-report html
+	$(VIRTUALENV_DIR)/bin/py.test -v --cov pulpstatus --cov-report html test
 
 check-js: node_modules/timestamp
 	$(NPM) test
