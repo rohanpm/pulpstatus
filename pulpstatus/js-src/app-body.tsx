@@ -65,7 +65,7 @@ export default class extends React.Component<{}, AppBodyState> {
 
     render() {
         Logger.debug("body render with tasks", this.state.tasks);
-        if (!this.state.availableEnvs) {
+        if (this.state.availableEnvs.length === 0) {
             return <div className={this.globalClassName()}>
                 Loading available environments...
             </div>;
