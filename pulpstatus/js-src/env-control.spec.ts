@@ -1,6 +1,6 @@
 import { expect } from "chai";
 
-import EnvControl from "./env-control";
+import { EnvControl } from "./env-control";
 
 describe('EnvControl', () => {
     it('can be constructed', () => {

@@ -1,13 +1,13 @@
 import * as React from 'react';
 import * as Logger from 'js-logger';
 
-interface EnvControlProps {
+export interface EnvControlProps {
     env: string;
     availableEnvs: Array<string>;
-    onEnvChange: (env: string) => any;
+    onEnvChange?: (env: string) => any;
 }
 
-export default class extends React.Component<EnvControlProps> {
+export class EnvControl extends React.Component<EnvControlProps> {
     render() {
         return <form>
             {this.renderEnvInputs()}
@@ -46,6 +46,8 @@ export default class extends React.Component<EnvControlProps> {
             return;
         }
         Logger.debug('set env to', event.target.value);
-        this.props.onEnvChange(event.target.value);
+        if (this.props.onEnvChange) {
+            this.props.onEnvChange(event.target.value);
+        }
     }
 }
