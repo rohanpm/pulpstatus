@@ -1,7 +1,13 @@
 import * as React from 'react';
 import * as Logger from 'js-logger';
 
-export default class extends React.Component {
+import { Task, TaskState } from './types';
+
+interface InfoProps {
+    tasks?: Array<Task>;
+};
+
+export default class extends React.Component<InfoProps> {
     render() {
         Logger.debug('render info');
         return <div className="info">{this.innerInfo()}</div>;
@@ -30,8 +36,8 @@ export default class extends React.Component {
         return this.tasksCount('waiting');
     }
 
-    tasksCount(state) {
-        return this.props.tasks.reduce((accum, task) => {
+    tasksCount(state: TaskState) {
+        return (this.props.tasks || []).reduce((accum, task) => {
             if (task.state == state) {
                 return accum + 1;
             }
