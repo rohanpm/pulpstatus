@@ -16,7 +16,7 @@ DEV_ENV=\
 
 all: $(BUNDLE)
 
-node_modules/timestamp: package.json
+node_modules/timestamp: package.json package-lock.json
 	$(NPM) install
 	touch $@
 
@@ -29,10 +29,10 @@ $(VIRTUALENV_DIR)/bin/pip:
 	$(VIRTUALENV) $(VIRTUALENV_DIR)
 	$(VIRTUALENV_DIR)/bin/pip install --upgrade pip
 
-$(GUNICORN): $(VIRTUALENV_DIR)/bin/pip
+$(GUNICORN): $(VIRTUALENV_DIR)/bin/pip requirements.txt
 	$(VIRTUALENV_DIR)/bin/pip install -r requirements.txt
 
-$(FLASK): $(VIRTUALENV_DIR)/bin/pip
+$(FLASK): $(VIRTUALENV_DIR)/bin/pip requirements.txt
 	$(VIRTUALENV_DIR)/bin/pip install -r requirements.txt
 
 run-webpack-watch: $(WEBPACK)
@@ -51,3 +51,18 @@ dev:
 clean:
 	rm -f $(BUNDLE) app-bundle.js
 	rm -rf $(VIRTUALENV_DIR)
+	rm -rf node_modules
+
+pydeps: $(VIRTUALENV_DIR)/deps.timestamp
+
+$(VIRTUALENV_DIR)/deps.timestamp: requirements.txt test-requirements.txt $(VIRTUALENV_DIR)/bin/pip
+	$(VIRTUALENV_DIR)/bin/pip install -r requirements.txt -r test-requirements.txt
+
+check-py: pydeps
+	$(VIRTUALENV_DIR)/bin/pip install --editable .
+	$(VIRTUALENV_DIR)/bin/py.test -v --cov pulpstatus --cov-report html
+
+check-js: node_modules/timestamp
+	$(NPM) test
+
+check: check-py check-js

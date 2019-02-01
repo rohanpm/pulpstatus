@@ -1,10 +1,17 @@
-import React from 'react';
+import * as React from 'react';
 
 //const SPINNER_CHARS = '▁▂▃▄▅▆▇█▇▆▅▄▃▁'.split('');
 const SPINNER_CHARS = '▉▊▋▌▍▎▏▎▍▌▋▊▉'.split('');
 
-export default class extends React.Component {
-    constructor(props) {
+interface SpinnerState {
+    index: number
+}
+
+
+export default class extends React.Component<{}, SpinnerState> {
+    timer: number;
+
+    constructor(props = {}) {
         super(props);
         this.state = {index: 0};
     }

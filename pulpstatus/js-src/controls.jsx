@@ -1,7 +1,6 @@
-import React from 'react';
+import * as React from 'react';
 
 import EnvControl from './env-control.jsx';
-import Spinner from './spinner.jsx';
 
 export default class extends React.Component {
     chartsControl() {

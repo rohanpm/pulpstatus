@@ -3,6 +3,9 @@ Pulp Status
 
 This is a simple application to track status of tasks in Pulp servers.
 
+[![Build Status](https://travis-ci.org/rohanpm/pulpstatus.svg?branch=master)](https://travis-ci.org/rohanpm/pulpstatus)
+[![Coverage Status](https://coveralls.io/repos/github/rohanpm/pulpstatus/badge.svg?branch=master)](https://coveralls.io/github/rohanpm/pulpstatus?branch=master)
+
 Configuration
 -------------
 

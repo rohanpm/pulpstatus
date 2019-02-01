@@ -1,5 +1,5 @@
-import React from 'react';
-import Logger from 'js-logger';
+import * as React from 'react';
+import * as Logger from 'js-logger';
 
 export default class extends React.Component {
     render() {

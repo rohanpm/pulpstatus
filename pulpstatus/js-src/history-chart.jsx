@@ -1,7 +1,7 @@
-import React from 'react';
+import * as React from 'react';
 import * as ReactChart from 'react-chartjs';
 import TimeAgo from 'react-timeago';
-import Logger from 'js-logger';
+import * as Logger from 'js-logger';
 
 
 export default class extends React.Component {

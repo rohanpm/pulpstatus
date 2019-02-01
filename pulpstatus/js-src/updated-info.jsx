@@ -1,8 +1,8 @@
-import React from 'react';
+import * as React from 'react';
 import TimeAgo from 'react-timeago';
-import Logger from 'js-logger';
+import * as Logger from 'js-logger';
 
-import Spinner from './spinner.jsx';
+import Spinner from './spinner.tsx';
 
 export default class extends React.Component {
     render() {
