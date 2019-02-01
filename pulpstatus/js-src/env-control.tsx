@@ -1,7 +1,13 @@
 import * as React from 'react';
 import * as Logger from 'js-logger';
 
-export default class extends React.Component {
+interface EnvControlProps {
+    env: string;
+    availableEnvs: Array<string>;
+    onEnvChange: (env: string) => any;
+}
+
+export default class extends React.Component<EnvControlProps> {
     render() {
         return <form>
             {this.renderEnvInputs()}
@@ -9,7 +15,7 @@ export default class extends React.Component {
     }
 
     renderEnvInputs() {
-        const prefix = (str) => (str.split('-')[0]);
+        const prefix = (str: string) => (str.split('-')[0]);
         var lastPrefix = prefix(this.props.availableEnvs[0]);
 
         return this.props.availableEnvs.reduce((out, env) => {
@@ -31,10 +37,10 @@ export default class extends React.Component {
 
             out.push(elem);
             return out;
-        }, []);
+        }, [] as Array<JSX.Element>);
     }
 
-    handleChange(event) {
+    handleChange(event: React.ChangeEvent<HTMLInputElement>) {
         Logger.debug('radio change', event);
         if (!event.target.checked) {
             return;
