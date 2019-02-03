@@ -9,6 +9,13 @@ interface TaskRowProps {
     order: Array<string>;
 };
 
+interface Step {
+    state: string;
+    step_type: string;
+};
+
+type RenderFunction = () => JSX.Element;
+
 export default class extends React.Component<TaskRowProps> {
     render() {
         return <tr>
@@ -16,10 +23,17 @@ export default class extends React.Component<TaskRowProps> {
         </tr>;
     }
 
+    getRenderFn(key: string): RenderFunction {
+        const thisUnknown = (this as unknown);
+        const thisLookup = (thisUnknown as {[key: string]: RenderFunction});
+        const fnKey = 'render' + key[0].toUpperCase() + key.substr(1);
+        return () => thisLookup[fnKey].apply(this);
+    }
+
     renderCells() {
         return this.props.order.reduce((out, key) => {
-            const fn = 'render' + key[0].toUpperCase() + key.substr(1);
-            const val = this[fn].apply(this);
+            const fn = this.getRenderFn(key);
+            const val = fn();
             out.push(<td key={key}>{val}</td>);
             return out;
         }, [] as Array<JSX.Element>);
@@ -38,19 +52,19 @@ export default class extends React.Component<TaskRowProps> {
     }
 
     renderType() {
-        return this.props.task['task_type'] || '<unknown_type>';
+        return this.props.task.task_type || '<unknown_type>';
     }
 
     renderTags() {
-        const li = (this.props.task['tags'] || []).reduce((out, tag) => {
+        const li = (this.props.task.tags || []).reduce((out, tag) => {
             out.push(<li key={tag}>{tag}</li>);
             return out;
-        }, []);
+        }, [] as Array<JSX.Element>);
         return <ul>{li}</ul>;
     }
 
     renderWorker() {
-        const workerName = this.props.task['worker_name'] || '<unknown_worker>';
+        const workerName = this.props.task.worker_name || '<unknown_worker>';
         // Simplify it to strip redundant info
         var [name, host] = workerName.split('@');
         if (!host) {
@@ -84,17 +98,21 @@ export default class extends React.Component<TaskRowProps> {
 
         try {
             const type = keys[0];
-            const steps = report[type];
-            return <ul>
-                {steps.map((step, index) =>
-                    <li key={index} className={'step step-' + step.state}>
-                        {step.step_type}
-                    </li>
-                )}
-            </ul>;
+            const reportObject = report as any;
+            const maybeSteps = reportObject[type];
+            if (maybeSteps instanceof Array) {
+                const steps = maybeSteps as Array<Step>;
+                return <ul>
+                    {steps.map((step, index) =>
+                        <li key={index} className={'step step-' + step.state}>
+                            {step.step_type}
+                        </li>
+                    )}
+                </ul>;
+            }
         } catch(err) {
             Logger.warn('error rendering progress report', err);
-            return this.progressNotAvailable();
         }
+        return this.progressNotAvailable();
     }
 }

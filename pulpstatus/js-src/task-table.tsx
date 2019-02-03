@@ -12,7 +12,7 @@ const TABLE_ORDER = [
     'progress',
 ];
 
-const TABLE_HEADERS = {
+const TABLE_HEADERS: ObjectMap<string> = {
     id: 'Task',
     started: 'Started',
     type: 'Type',
