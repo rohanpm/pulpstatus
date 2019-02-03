@@ -36,10 +36,15 @@ interface UrlState {
     refresh?: string;
 };
 
+interface LocationLite {
+    pathname: string;
+    search: string;
+};
+
 
 const INITIAL_HISTORY = '2000-01-01T00:00:00Z';
 
-function getMax<T>(values?: Array<T>) {
+export function getMax<T>(values?: Array<T>) {
     if (!values || values.length==0) {
         return null;
     }
@@ -52,11 +57,17 @@ function getMax<T>(values?: Array<T>) {
     return max;
 }
 
-export default class extends React.Component<{}, AppBodyState> {
+export class AppBody extends React.Component<{}, AppBodyState> {
     timer?: number;
+    location: LocationLite;
 
     constructor(props: {}) {
         super(props);
+
+        this.location = typeof(location) == 'undefined'
+            ? {pathname: '', search: ''}
+            : location;
+
         this.state = {
             availableEnvs: [],
             env: null, fetchingEnv: null, fetchedEnv: null,
@@ -209,9 +220,14 @@ export default class extends React.Component<{}, AppBodyState> {
     }
 
     onEnvsFetched(envs: Array<string>) {
+        const selectedEnv =
+            (this.state.env && envs.indexOf(this.state.env) != -1)
+            ? this.state.env
+            : envs[0];
+
         this.setState({
             availableEnvs: envs,
-            env: envs[0],
+            env: selectedEnv,
         });
         this.startTimer();
         this.fetchData();
@@ -223,7 +239,7 @@ export default class extends React.Component<{}, AppBodyState> {
             this.fetchData();
         }
 
-        const currentUrl = [location.pathname, location.search].join('');
+        const currentUrl = [this.location.pathname, this.location.search].join('');
         const newUrl = this.urlFromState();
         if (currentUrl !== newUrl) {
             history.pushState(this.urlState(), '', newUrl);
@@ -329,16 +345,7 @@ export default class extends React.Component<{}, AppBodyState> {
         });
     }
 
-    onNewHistory(newState: AppBodyState, history: RawHistory) {
-        // History object is like this:
-        /*
-            {'metric1': [
-                [<timestamp>, <value>],
-                ...
-            ]}
-        */
-
-        const aggregate = this.state.history || {};
+    aggregateWith(aggregate: HistoryMap, history: RawHistory) {
         (history.data || []).forEach((h) => {
             const value = h.value;
             const key = history.keys[h.key];
@@ -351,7 +358,7 @@ export default class extends React.Component<{}, AppBodyState> {
         });
 
         (history.keys || []).forEach((key) => {
-            aggregate[key].sort((a, b) => {
+            (aggregate[key] || []).sort((a, b) => {
                 const timeA = a[0];
                 const timeB = b[0];
                 if (timeA > timeB) {
@@ -363,6 +370,20 @@ export default class extends React.Component<{}, AppBodyState> {
                 return 0;
             });
         });
+
+        return aggregate;
+    }
+
+    onNewHistory(newState: AppBodyState, history: RawHistory) {
+        // History object is like this:
+        /*
+            {'metric1': [
+                [<timestamp>, <value>],
+                ...
+            ]}
+        */
+
+        const aggregate = this.aggregateWith(this.state.history || {}, history);
 
         Object.assign(newState, {
             history: aggregate,
@@ -385,7 +406,6 @@ export default class extends React.Component<{}, AppBodyState> {
         this.setState({env: newEnv, fetchError: null, history: {}, historyTimestamp: INITIAL_HISTORY});
     }
 
-
     urlFromState() {
         const search = qs.stringify({
             env: this.state.env,
@@ -394,30 +414,29 @@ export default class extends React.Component<{}, AppBodyState> {
             charts: this.state.charts,
         });
         return [
-            location.pathname,
+            this.location.pathname,
             '?',
             search
         ].join('');
     }
 
-    stateFromSearch() {
+    stateFromSearch(): AppBodyState {
         const out: AppBodyState = {};
 
-        if (typeof(location) != 'undefined' && location.search) {
-            const parsed = qs.parse(location.search.substr(1));
-            if ('env' in parsed) {
-                out.env = parsed.env;
-            }
-            if ('charts' in parsed) {
-                out.charts = parsed.charts;
-            }
-            ['relativeTimes', 'refresh'].forEach((key) => {
-                if (key in parsed) {
-                    (out as ObjectMap<boolean>)[key] = parsed[key] == '1';
-                }
-            });
-            Logger.debug('parsed from search', out);
+        const parsed = qs.parse(this.location.search.substr(1));
+        if ('env' in parsed) {
+            out.env = parsed.env;
         }
+        if ('charts' in parsed) {
+            out.charts = parsed.charts;
+        }
+        ['relativeTimes', 'refresh'].forEach((key) => {
+            if (key in parsed) {
+                (out as ObjectMap<boolean>)[key] = parsed[key] == '1';
+            }
+        });
+        Logger.debug('parsed from search', out);
+
         return out;
     }
 };
