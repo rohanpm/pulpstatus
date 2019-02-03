@@ -5,22 +5,26 @@ import * as Logger from 'js-logger';
 
 
 interface HistoryChartProps {
-    history?: any;
+    history?: HistoryMap;
     historyKey: string;
     since: 'full' | number;
     fillColor?: string;
 };
 
+type HistorySlice = Array<HistoryPoint>;
+
 
 export default class extends React.Component<HistoryChartProps> {
-    history() {
-        const unfiltered = this.props.history[this.props.historyKey + '-count'] || [];
+    history(): HistorySlice {
+        const history = this.props.history || {};
+        const unfiltered = history[this.props.historyKey + '-count'] || [];
         var beginIndex = 0;
         if (this.props.since != 'full') {
             const now = new Date();
             const since = new Date(now.getTime() - this.props.since*1000);
             const sinceStr = since.toISOString();
-            beginIndex = unfiltered.findIndex((timestamp, value) => timestamp >= sinceStr);
+            beginIndex = unfiltered.findIndex(
+                (elem) => elem[0] >= sinceStr);
             Logger.debug('sinceStr', sinceStr, 'beginIndex', beginIndex);
         }
 
@@ -33,7 +37,7 @@ export default class extends React.Component<HistoryChartProps> {
 
     // https://github.com/chartjs/Chart.js/tree/v1.1.1/docs
 
-    chartData(history) {
+    chartData(history: HistorySlice) {
         return {
             labels: history.map((elem) => elem[0]),
             datasets: [{
@@ -57,11 +61,11 @@ export default class extends React.Component<HistoryChartProps> {
         };
     }
 
-    min(history) {
+    min(history: HistorySlice) {
         return Math.min.apply(null, history.map(x => x[1]));
     }
 
-    mean(hist) {
+    mean(hist: HistorySlice) {
         var out = 0.0;
         hist.forEach(x => {
             out = out + x[1]/hist.length;
@@ -69,11 +73,11 @@ export default class extends React.Component<HistoryChartProps> {
         return Math.round(out);
     }
 
-    max(history) {
+    max(history: HistorySlice) {
         return Math.max.apply(null, history.map(x => x[1]));
     }
 
-    renderLabel(history) {
+    renderLabel(history: HistorySlice) {
         if (!history || history.length < 2) {
             return null;
         }

@@ -4,9 +4,9 @@ import { EnvControl, EnvControlProps } from './env-control';
 
 interface ControlsProps extends EnvControlProps {
     charts?: "full" | "" | number;
-    onChartsChange?: React.ChangeEventHandler;
-    onRelativeTimesChange?: React.ChangeEventHandler;
-    onRefreshChange?: React.ChangeEventHandler;
+    onChartsChange?: React.ChangeEventHandler<HTMLSelectElement>;
+    onRelativeTimesChange?: React.ChangeEventHandler<HTMLInputElement>;
+    onRefreshChange?: React.ChangeEventHandler<HTMLInputElement>;
     onRefreshNow?: React.MouseEventHandler;
     relativeTimes?: boolean;
     refresh?: boolean;

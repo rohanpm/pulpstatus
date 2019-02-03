@@ -16,40 +16,46 @@ import HistoryChart from './history-chart';
 
 interface AppBodyState {
     tasks?: Array<Task>;
-    availableEnvs: Array<string>;
-    env: string | null;
-    fetchingEnv: string | null;
-    fetchedEnv: string | null;
+    availableEnvs?: Array<string>;
+    env?: string | null;
+    fetchingEnv?: string | null;
+    fetchedEnv?: string | null;
     fetchError?: any;
-    relativeTimes: boolean;
-    refresh: boolean;
-    charts: "full" | "" | number;
-    history?: object;
-    historyTimestamp: string;
+    relativeTimes?: boolean;
+    refresh?: boolean;
+    charts?: "full" | "" | number;
+    history?: HistoryMap;
+    historyTimestamp?: string;
     lastUpdated?: string;
     fetching?: any;
 };
 
+interface UrlState {
+    env?: string;
+    relativeTimes?: string;
+    refresh?: string;
+};
 
-const URL_STATE_KEYS = [
-    'env',
-    'relativeTimes',
-    'refresh',
-];
 
 const INITIAL_HISTORY = '2000-01-01T00:00:00Z';
 
-function getMax(values?: Array<number>) {
-    if (!values) {
+function getMax<T>(values?: Array<T>) {
+    if (!values || values.length==0) {
         return null;
     }
-    return Math.max(...values);
+    var max = values[0];
+    for (const value of values) {
+        if (value > max) {
+            max = value;
+        }
+    }
+    return max;
 }
 
 export default class extends React.Component<{}, AppBodyState> {
     timer?: number;
 
-    constructor(props) {
+    constructor(props: {}) {
         super(props);
         this.state = {
             availableEnvs: [],
@@ -65,7 +71,7 @@ export default class extends React.Component<{}, AppBodyState> {
 
     render() {
         Logger.debug("body render with tasks", this.state.tasks);
-        if (!this.state.availableEnvs) {
+        if ((this.state.availableEnvs || []).length === 0) {
             return <div className={this.globalClassName()}>
                 Loading available environments...
             </div>;
@@ -73,7 +79,7 @@ export default class extends React.Component<{}, AppBodyState> {
         return (
             <div className={this.globalClassName()}>
                 <Controls env={this.env()}
-                          availableEnvs={this.state.availableEnvs}
+                          availableEnvs={this.state.availableEnvs || []}
                           onEnvChange={(...args) => this.handleEnvChange(...args)}
                           onRefreshNow={(...args) => this.fetchData()}
                           onRelativeTimesChange={(...args) => this.handleRelativeTimesChange(...args)}
@@ -142,19 +148,19 @@ export default class extends React.Component<{}, AppBodyState> {
         );
     }
 
-    handleRelativeTimesChange(event) {
+    handleRelativeTimesChange(event: React.ChangeEvent<HTMLInputElement>) {
         Logger.debug('relative times changed', event.target.checked);
         this.setState({relativeTimes: event.target.checked});
     }
 
-    handleRefreshChange(event) {
+    handleRefreshChange(event: React.ChangeEvent<HTMLInputElement>) {
         Logger.debug('refresh changed', event.target.checked);
         this.setState({refresh: event.target.checked});
     }
 
-    handleChartsChange(event) {
+    handleChartsChange(event: React.ChangeEvent<HTMLSelectElement>) {
         Logger.debug('charts changed', event.target.value);
-        this.setState({charts: event.target.value});
+        this.setState({charts: event.target.value as ("" | "full" | number)});
     }
 
     isLoading() {
@@ -202,7 +208,7 @@ export default class extends React.Component<{}, AppBodyState> {
         window.onpopstate = null;
     }
 
-    onEnvsFetched(envs) {
+    onEnvsFetched(envs: Array<string>) {
         this.setState({
             availableEnvs: envs,
             env: envs[0],
@@ -231,10 +237,11 @@ export default class extends React.Component<{}, AppBodyState> {
     }
 
     urlState() {
-        return URL_STATE_KEYS.reduce((out, key) => {
-            out[key] = this.state[key];
-            return out;
-        }, {});
+        return {
+            env: this.state.env,
+            relativeTimes: this.state.relativeTimes,
+            refresh: this.state.refresh,
+        };
     }
 
     fetchData(url: string | undefined = undefined) {
@@ -258,8 +265,9 @@ export default class extends React.Component<{}, AppBodyState> {
         });
     }
 
-    onNewData(env, data, textStatus, jqXHR, ...rest) {
-        const newState = {
+    onNewData(env: string, data: ApiResponse, textStatus: string,
+              jqXHR: JQueryXHR, ...rest: any[]) {
+        const newState: AppBodyState = {
             fetching: null,
             fetchingEnv: null,
             fetchError: null,
@@ -272,14 +280,15 @@ export default class extends React.Component<{}, AppBodyState> {
                 fetchedEnv: env,
                 lastUpdated: jqXHR.getResponseHeader('Date'),
             });
-            this.onNewPulpData(newState, data['pulp']);
+            this.onNewPulpData(newState, data.pulp);
             this.onNewHistory(newState, data['history']);
         }
 
         this.setState(newState);
     }
 
-    onFetchError(env, jqXHR, textStatus, error, ...rest) {
+    onFetchError(env: string, jqXHR: JQueryXHR, textStatus: string,
+                 error: Error|string, ...rest: any[]) {
         if (env != this.env()) {
             Logger.debug('fetch error for', env, 'but no longer interested');
             return;
@@ -306,21 +315,21 @@ export default class extends React.Component<{}, AppBodyState> {
         if (this.state.fetchedEnv != env) {
             const newState = {
                 fetchedEnv: env,
-                lastUpdated: jqXHR.getResponseHeader('Date'),
+                lastUpdated: jqXHR.getResponseHeader('Date') || '',
             };
             this.onNewPulpData(newState, []);
-            this.onNewHistory(newState, {});
+            this.onNewHistory(newState, {keys: [], times: [], data: []});
             this.setState(newState);
         }
     }
 
-    onNewPulpData(newState, pulp_data) {
+    onNewPulpData(newState: AppBodyState, pulp_data: Array<Task>) {
         Object.assign(newState, {
             tasks: pulp_data,
         });
     }
 
-    onNewHistory(newState, history) {
+    onNewHistory(newState: AppBodyState, history: RawHistory) {
         // History object is like this:
         /*
             {'metric1': [
@@ -357,7 +366,7 @@ export default class extends React.Component<{}, AppBodyState> {
 
         Object.assign(newState, {
             history: aggregate,
-            historyTimestamp: getMax(history['times']) || INITIAL_HISTORY,
+            historyTimestamp: getMax(history.times) || INITIAL_HISTORY,
         });
     }
 
@@ -372,7 +381,7 @@ export default class extends React.Component<{}, AppBodyState> {
         return 'data/' + this.env() + '/latest';
     }
 
-    handleEnvChange(newEnv) {
+    handleEnvChange(newEnv: string) {
         this.setState({env: newEnv, fetchError: null, history: {}, historyTimestamp: INITIAL_HISTORY});
     }
 
@@ -392,10 +401,7 @@ export default class extends React.Component<{}, AppBodyState> {
     }
 
     stateFromSearch() {
-        const out: {
-            env?: string;
-            charts?: string;
-        } = {};
+        const out: AppBodyState = {};
 
         if (typeof(location) != 'undefined' && location.search) {
             const parsed = qs.parse(location.search.substr(1));
@@ -407,7 +413,7 @@ export default class extends React.Component<{}, AppBodyState> {
             }
             ['relativeTimes', 'refresh'].forEach((key) => {
                 if (key in parsed) {
-                    out[key] = parsed[key] == '1';
+                    (out as ObjectMap<boolean>)[key] = parsed[key] == '1';
                 }
             });
             Logger.debug('parsed from search', out);

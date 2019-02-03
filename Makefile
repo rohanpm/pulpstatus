@@ -1,7 +1,7 @@
 NPM=npm
 WEBPACK=node_modules/.bin/webpack
 BUNDLE=pulpstatus/static/js/app-bundle.js
-APP_JS=pulpstatus/js-src/app.js
+APP_JS=pulpstatus/js-src/app.ts
 VIRTUALENV_DIR=virtualenv
 VIRTUALENV=virtualenv-3
 GUNICORN=$(VIRTUALENV_DIR)/bin/gunicorn
