@@ -28,7 +28,6 @@ interface AppBodyState {
     historyTimestamp?: string;
     lastUpdated?: string;
     fetching?: any;
-    [key: string]: any;
 };
 
 interface UrlState {
@@ -266,7 +265,8 @@ export default class extends React.Component<{}, AppBodyState> {
         });
     }
 
-    onNewData(env: string, data: any, textStatus: string, jqXHR: any, ...rest: any[]) {
+    onNewData(env: string, data: ApiResponse, textStatus: string,
+              jqXHR: JQueryXHR, ...rest: any[]) {
         const newState: AppBodyState = {
             fetching: null,
             fetchingEnv: null,
@@ -280,14 +280,15 @@ export default class extends React.Component<{}, AppBodyState> {
                 fetchedEnv: env,
                 lastUpdated: jqXHR.getResponseHeader('Date'),
             });
-            this.onNewPulpData(newState, data['pulp']);
+            this.onNewPulpData(newState, data.pulp);
             this.onNewHistory(newState, data['history']);
         }
 
         this.setState(newState);
     }
 
-    onFetchError(env: string, jqXHR: any, textStatus: string, error: any, ...rest: any[]) {
+    onFetchError(env: string, jqXHR: JQueryXHR, textStatus: string,
+                 error: Error|string, ...rest: any[]) {
         if (env != this.env()) {
             Logger.debug('fetch error for', env, 'but no longer interested');
             return;
@@ -314,7 +315,7 @@ export default class extends React.Component<{}, AppBodyState> {
         if (this.state.fetchedEnv != env) {
             const newState = {
                 fetchedEnv: env,
-                lastUpdated: jqXHR.getResponseHeader('Date'),
+                lastUpdated: jqXHR.getResponseHeader('Date') || '',
             };
             this.onNewPulpData(newState, []);
             this.onNewHistory(newState, {keys: [], times: [], data: []});
@@ -338,7 +339,7 @@ export default class extends React.Component<{}, AppBodyState> {
         */
 
         const aggregate = this.state.history || {};
-        (history.data || []).forEach((h: any) => {
+        (history.data || []).forEach((h) => {
             const value = h.value;
             const key = history.keys[h.key];
             const time = history.times[h.time];
@@ -349,7 +350,7 @@ export default class extends React.Component<{}, AppBodyState> {
             aggregate[key].push([time, value]);
         });
 
-        (history.keys || []).forEach((key: any) => {
+        (history.keys || []).forEach((key) => {
             aggregate[key].sort((a, b) => {
                 const timeA = a[0];
                 const timeB = b[0];
@@ -412,7 +413,7 @@ export default class extends React.Component<{}, AppBodyState> {
             }
             ['relativeTimes', 'refresh'].forEach((key) => {
                 if (key in parsed) {
-                    out[key] = parsed[key] == '1';
+                    (out as ObjectMap<boolean>)[key] = parsed[key] == '1';
                 }
             });
             Logger.debug('parsed from search', out);

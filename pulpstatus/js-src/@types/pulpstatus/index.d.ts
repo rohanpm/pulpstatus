@@ -28,8 +28,9 @@ declare type HistoryPoint = [string, number];
 declare type HistoryMap = ObjectMap<Array<HistoryPoint>>;
 
 interface RawHistoryDatum {
-    time: string;
-    key: string;
+    /* time & key are indexes into 'times', 'keys' in RawHistory */
+    time: number;
+    key: number;
     value: number;
 }
 
@@ -37,6 +38,11 @@ interface RawHistory {
     keys: Array<string>;
     times: Array<string>;
     data: Array<RawHistoryDatum>;
+}
+
+interface ApiResponse {
+    pulp: Array<Task>;
+    history: RawHistory;
 }
 
 declare function require(name: string): any;
