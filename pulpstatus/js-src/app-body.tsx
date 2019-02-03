@@ -220,9 +220,14 @@ export class AppBody extends React.Component<{}, AppBodyState> {
     }
 
     onEnvsFetched(envs: Array<string>) {
+        const selectedEnv =
+            (this.state.env && envs.indexOf(this.state.env) != -1)
+            ? this.state.env
+            : envs[0];
+
         this.setState({
             availableEnvs: envs,
-            env: envs[0],
+            env: selectedEnv,
         });
         this.startTimer();
         this.fetchData();
