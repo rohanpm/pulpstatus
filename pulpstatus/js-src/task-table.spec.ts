@@ -2,8 +2,6 @@ import { expect } from "chai";
 
 import TaskTable from "./task-table";
 
-const TEST_ORDER = ['id', 'started', 'type', 'tags', 'worker', 'progress'];
-
 
 describe('TaskTable', () => {
     it('can render when empty', () => {
