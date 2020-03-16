@@ -1,13 +1,15 @@
-chardet==3.0.4
-Click==7.0
-Flask==1.0.2
-Flask-Compress==1.4.0
-gunicorn==19.9.0
-idna==2.8
-itsdangerous==1.1.0
-Jinja2==2.10
-MarkupSafe==1.1.0
-requests==2.21.0
-requests-cache==0.4.13
-urllib3==1.24.1
-Werkzeug==0.14.1
+certifi==2019.11.28 --hash=sha256:017c25db2a153ce562900032d5bc68e9f191e44e9a0f762f373977de9df1fbb3
+chardet==3.0.4 --hash=sha256:fc323ffcaeaed0e0a02bf4d117757b98aed530d9ed4531e3e15460124c106691
+Click==7.0 --hash=sha256:2335065e6395b9e67ca716de5f7526736bfa6ceead690adf616d925bdc622b13
+Flask==1.0.2 --hash=sha256:a080b744b7e345ccfcbc77954861cb05b3c63786e93f2b3875e0913d44b43f05
+Flask-Compress==1.4.0 --hash=sha256:468693f4ddd11ac6a41bca4eb5f94b071b763256d54136f77957cfee635badb3
+gunicorn==19.9.0 --hash=sha256:aa8e0b40b4157b36a5df5e599f45c9c76d6af43845ba3b3b0efe2c70473c2471
+idna==2.8 --hash=sha256:ea8b7f6188e6fa117537c3df7da9fc686d485087abf6ac197f9c46432f7e4a3c
+itsdangerous==1.1.0 --hash=sha256:b12271b2047cb23eeb98c8b5622e2e5c5e9abd9784a153e9d8ef9cb4dd09d749
+Jinja2==2.10 --hash=sha256:74c935a1b8bb9a3947c50a54766a969d4846290e1e788ea44c1392163723c3bd
+MarkupSafe==1.1.0 --hash=sha256:d9ac82be533394d341b41d78aca7ed0e0f4ba5a2231602e2f05aa87f25c51672 \
+                  --hash=sha256:f82e347a72f955b7017a39708a3667f106e6ad4d10b25f237396a7115d8ed5fd
+requests==2.21.0 --hash=sha256:7bf2a778576d825600030a110f3c0e3e8edc51dfaafe1c146e39a2027784957b
+requests-cache==0.4.13 --hash=sha256:e9270030becc739b0a7f7f834234c73a878b2d794122bf76f40055a22419eb67
+urllib3==1.24.1 --hash=sha256:61bf29cada3fc2fbefad4fdf059ea4bd1b4a86d2b6d15e1c7c0b582b9752fe39
+Werkzeug==0.14.1 --hash=sha256:d5da73735293558eb1651ee2fddc4d0dedcfa06538b8813a2e20011583c9e49b
