@@ -56,7 +56,8 @@ clean:
 pydeps: $(VIRTUALENV_DIR)/deps.timestamp
 
 $(VIRTUALENV_DIR)/deps.timestamp: requirements.txt test-requirements.txt $(VIRTUALENV_DIR)/bin/pip
-	$(VIRTUALENV_DIR)/bin/pip install -r requirements.txt -r test-requirements.txt
+	$(VIRTUALENV_DIR)/bin/pip install -r requirements.txt
+	$(VIRTUALENV_DIR)/bin/pip install -r test-requirements.txt
 
 check-py: pydeps
 	$(VIRTUALENV_DIR)/bin/pip install --editable .
