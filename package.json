@@ -7,7 +7,7 @@
     "@types/react": "^16.8.0",
     "@types/react-dom": "^16.0.11",
     "chart.js": "^1.1.1",
-    "jquery": "3.1.1",
+    "jquery": "3.4.0",
     "js-logger": "^1.4.1",
     "qs": "6.3.0",
     "react": "15.3.2",
