@@ -12,7 +12,23 @@ interface TaskRowProps {
 interface Step {
     state: string;
     step_type: string;
+    items_total?: number;
+    num_processed?: number;
 };
+
+export function stepLabel(step: Step): string {
+    let label = step.step_type;
+
+    // If a step has meaningful item counts, we can use that to show
+    // percentage of completion for that step.
+    // Note: most steps don't have a meaningful count.
+    if (step.state == "IN_PROGRESS" && step.items_total && step.items_total > 1 && step.num_processed) {
+        const pct = Math.round(step.num_processed / step.items_total * 100);
+        label = `${label} (${pct}%)`;
+    }
+
+    return label;
+}
 
 type RenderFunction = () => JSX.Element;
 
@@ -105,7 +121,7 @@ export default class extends React.Component<TaskRowProps> {
                 return <ul>
                     {steps.map((step, index) =>
                         <li key={index} className={'step step-' + step.state}>
-                            {step.step_type}
+                            {stepLabel(step)}
                         </li>
                     )}
                 </ul>;
