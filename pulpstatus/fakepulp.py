@@ -127,8 +127,17 @@ def random_progress():
         if i == active:
             state = 'IN_PROGRESS'
         elif i < active:
-            state = 'FINISHED'
-        steps.append({'step_type': step_types[i],
-                      'state': state})
+            state = "FINISHED"
+
+        step = {"step_type": step_types[i], "state": state}
+
+        if random.random() < 0.5:
+            step["items_total"] = 540034
+            step["num_processed"] = 23000
+        elif random.random() < 0.5:
+            step["items_total"] = 10000
+            step["num_processed"] = 9000
+
+        steps.append(step)
 
     return {'some_task': steps}
