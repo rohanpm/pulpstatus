@@ -1,4 +1,5 @@
 import { expect } from "chai";
+import * as ReactDOMServer from 'react-dom/server';
 
 import TaskRow from "./task-row";
 import { stepLabel } from "./task-row";
@@ -31,8 +32,9 @@ describe('stepLabel', () => {
             "state": "IN_PROGRESS",
         };
 
-        const text = stepLabel(step);
-        expect(text).to.be.equal("Do the thing (4%)");
+        const text = ReactDOMServer.renderToString(stepLabel(step));
+        expect(text).to.contain("Do the thing (4%)");
+        expect(text).to.contain("37 / 1000");
     });
 
 });
