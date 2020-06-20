@@ -3,7 +3,7 @@ WEBPACK=node_modules/.bin/webpack
 BUNDLE=pulpstatus/static/js/app-bundle.js
 APP_JS=pulpstatus/js-src/app.ts
 VIRTUALENV_DIR=virtualenv
-VIRTUALENV=virtualenv-3
+VIRTUALENV=virtualenv
 GUNICORN=$(VIRTUALENV_DIR)/bin/gunicorn
 FLASK=$(VIRTUALENV_DIR)/bin/flask
 
