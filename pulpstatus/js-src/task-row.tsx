@@ -16,8 +16,9 @@ interface Step {
     num_processed?: number;
 };
 
-export function stepLabel(step: Step): string {
+export function stepLabel(step: Step): JSX.Element {
     let label = step.step_type;
+    const labelProps: React.HTMLProps<HTMLSpanElement> = {};
 
     // If a step has meaningful item counts, we can use that to show
     // percentage of completion for that step.
@@ -25,9 +26,10 @@ export function stepLabel(step: Step): string {
     if (step.state == "IN_PROGRESS" && step.items_total && step.items_total > 1 && step.num_processed) {
         const pct = Math.round(step.num_processed / step.items_total * 100);
         label = `${label} (${pct}%)`;
+        labelProps.title = `${step.num_processed} / ${step.items_total}`;
     }
 
-    return label;
+    return <span {...labelProps}>{label}</span>;
 }
 
 type RenderFunction = () => JSX.Element;
