@@ -35,7 +35,7 @@
     "ts-node": "^8.0.2",
     "typescript": "^3.3.1",
     "webpack": "^4.29.0",
-    "webpack-cli": "^3.2.1"
+    "webpack-cli": "^3.3.12"
   },
   "scripts": {
     "build": "webpack --mode production && cp -v pulpstatus/static/js/app-bundle.js .",
